@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 0e21fc22b75f1e3448447f6af0e36c31
+timeCreated: 1449044600
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - BLOCKSMALL: {fileID: 178636, guid: fcc185186d7734b7b9d922df590803e6, type: 2}
+  - BLOCKSTICK: {fileID: 164086, guid: 4d93b97c7307343c780f0680d4eeee86, type: 2}
+  - BLOCKL: {fileID: 123346, guid: b948e46413681472aba9d8a682d6cb44, type: 2}
+  - BLOCKSQUARE: {fileID: 114488, guid: 9c32e07242f464195be81b4167a48d7a, type: 2}
+  - MATRED: {fileID: 2100000, guid: 24cfe93e1109445f7aad9f646023909d, type: 2}
+  - MATBLUE: {fileID: 2100000, guid: b7fd9e578ab474da3902932a011138a9, type: 2}
+  - MATGREEN: {fileID: 2100000, guid: 9251083d954a84499955ea131c1eb84e, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
