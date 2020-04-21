@@ -1,0 +1,48 @@
+Base path: C:/Program Files/Unity/Hub/Editor/2018.4.19f1/Editor/Data
+Cmd: initializeCompiler
+Cmd: compileComputeKernel
+  error: 1 plat 4 at Generic.compute(379): signed/unsigned mismatch, unsigned assumed
+  error: 1 plat 4 at Generic.compute(392): signed/unsigned mismatch, unsigned assumed
+  error: 1 plat 4 at Generic.compute(408): signed/unsigned mismatch, unsigned assumed
+  api=4 insize=15451 outsize=1565 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=64076 outsize=4649 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=9919 outsize=1857 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=9919 outsize=1889 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=23440 outsize=10721 ok=1
+Cmd: compileComputeKernel
+  error: 1 plat 4 at BarracudaReferenceImpl.compute(12): 'kernal' : unknown pragma ignored
+  error: 1 plat 4 at BarracudaReferenceImpl.compute(1255): array reference cannot be used as an l-value; not natively addressable, forcing loop to unroll
+  error: 1 plat 4 at BarracudaReferenceImpl.compute(1261): 'ix': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used
+  error: 1 plat 4 at BarracudaReferenceImpl.compute(1265): array reference cannot be used as an l-value; not natively addressable, forcing loop to unroll
+  api=4 insize=44328 outsize=8557 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=4053 outsize=1589 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=781 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1041 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=869 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=701 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1285 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1837 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1301 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1397 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1305 ok=1
+Cmd: compileComputeKernel
+  api=4 insize=28299 outsize=1365 ok=1
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
+Cmd: initializeCompiler
