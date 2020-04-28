@@ -9,7 +9,11 @@ public class BlockFactory {
 	//public GameObject BLOCKSQUARE;
 	GameObject[] blockTypes;
 	Material[] materialTypes;
+    public string box = "";
+    public BlockFactory()
+    {
 
+    }
 	public BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h, GameObject i, GameObject j,
                         Material k, Material l, Material m) {
 		blockTypes = new GameObject[10];
@@ -28,6 +32,8 @@ public class BlockFactory {
 		materialTypes[0] = k;
 		materialTypes[1] = l;
 		materialTypes[3] = m;
+        
+
 	}
 
 	public GameObject GetNextBlock() {	
@@ -39,7 +45,12 @@ public class BlockFactory {
 			Debug.Log("BlockFactory here");
 			mr.material = materialTypes[num];
 		}
+        box = block.ToString().Substring(0,6);
+        Debug.Log("팩토리에서의" + box);
 		return block;
-
 	}
+    public string CurrentBox()
+    {
+        return box;
+    }
 }

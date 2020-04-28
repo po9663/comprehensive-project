@@ -55,6 +55,9 @@
   <ItemGroup>
      <Compile Include="Assets\BlockFactory.cs" />
      <Compile Include="Assets\BlockMovement.cs" />
+     <Compile Include="Assets\ButtonClick.cs" />
+     <Compile Include="Assets\Main2BlockFactory.cs" />
+     <Compile Include="Assets\Main2BlockMovement.cs" />
      <None Include="Assets\NewSurfaceShader.shader" />
  <Reference Include="Unity.TextMeshPro.Editor">
  <HintPath>C:/Users/jongoan/Desktop/finalproject/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
