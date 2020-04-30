@@ -58,7 +58,7 @@ public class BlockMovement : MonoBehaviour {
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
 		activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
-		activeBlock.transform.position = new Vector3(-1, 3, 1);
+		activeBlock.transform.position = new Vector3(-1, 2, 1);
 		foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
 		{
 			Debug.Log("Start here");
@@ -280,7 +280,7 @@ public class BlockMovement : MonoBehaviour {
                     blockFactory.CurrentBox();
             boxes.Add(dataSend);
             Debug.Log("이 박스의 정보는 " + dataSend);
-            activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, 3, 1), Quaternion.identity);
+            activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, 2, 1), Quaternion.identity);
             
         }
 

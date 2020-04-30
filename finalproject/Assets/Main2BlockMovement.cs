@@ -28,13 +28,17 @@ public class Main2BlockMovement : MonoBehaviour
     public Material MATBLUE;
     public Material MATGREEN;
 
-    
-    GameObject[] objects;
+    public GameObject inputField;
+    public GameObject btn;
+    public Text textList;
 
+    GameObject[] objects;
+    public int num = 0;
+    public string str = "";
+    public GameObject[] gobjs;
     ArrayList boxes;
     Main2BlockFactory main2BlockFactory;
     GameObject activeBlock;
-    ButtonClick buttonClick;
     bool isSpacebar = false;
     float moveSpeed = 10f;
     //float defaultFallSpeed = 1f;
@@ -54,9 +58,6 @@ public class Main2BlockMovement : MonoBehaviour
     }
     void Start()
     {
-        main2BlockFactory = new Main2BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7, Block8, Block9, Block10, MATRED, MATBLUE, MATGREEN);
-        buttonClick = new ButtonClick();
-
         //grid생성
         initGrid();
         // get the active block
@@ -68,24 +69,50 @@ public class Main2BlockMovement : MonoBehaviour
 
     }
 
+    void CreateBox(string str)
+    {
+        Debug.Log("왜안될까");
+        gobjs = new GameObject[10];
+        gobjs[0] = Block;
+        gobjs[1] = Block2;
+        gobjs[2] = Block3;
+        gobjs[3] = Block4;
+        gobjs[4] = Block5;
+        gobjs[5] = Block6;
+        gobjs[6] = Block7;
+        gobjs[7] = Block8;
+        gobjs[8] = Block9;
+        gobjs[9] = Block10;
+        string[] lists = str.Split(',');
+        for (int i = 0; i < lists.Length; i++)
+        {
+            gobjs[i] = gobjs[int.Parse(lists[i])];
+        }
+        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7], gobjs[8], gobjs[9], MATRED, MATBLUE, MATGREEN);
 
+        activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
+
+        activeBlock.transform.position = new Vector3(-1, 2, 1);
+        
+        foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
+        {
+            Debug.Log("Start here");
+            mr.material = MATBLUE;
+        }
+    }
+    void OnClickList()
+    {
+        str = textList.text.ToString();
+        Debug.Log(textList.text);
+        inputField.SetActive(false);
+        btn.SetActive(false);
+        CreateBox(str);
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (buttonClick.ListStart())
-        {
-            Debug.Log("왜안될까");
-            activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
-            activeBlock.transform.position = new Vector3(-1, 3, 1);
-
-
-            foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
-            {
-                Debug.Log("Start here");
-                mr.material = MATBLUE;
-            }
-        }
+        
         if (!isMoving && !isRotating)
         {
 
@@ -296,7 +323,7 @@ public class Main2BlockMovement : MonoBehaviour
                     main2BlockFactory.CurrentBox();
             boxes.Add(dataSend);
             Debug.Log("이 박스의 정보는 " + dataSend);
-            activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(-1, 3, 1), Quaternion.identity);
+            activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(-1, 2, 1), Quaternion.identity);
             
 
         }
@@ -432,4 +459,5 @@ public class Main2BlockMovement : MonoBehaviour
         if (tElapsed >= 1f) isRotating = false;
     }
     
+
 }

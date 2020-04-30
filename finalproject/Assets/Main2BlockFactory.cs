@@ -13,7 +13,13 @@ public class Main2BlockFactory
     Material[] materialTypes;
     public string box = "";
     public int cnt = 0;
-    public ButtonClick buttonClick;
+    public string s = "";
+    Main2BlockMovement main2BlockMovement;
+
+
+
+
+
     public Main2BlockFactory()
     {
 
@@ -37,19 +43,18 @@ public class Main2BlockFactory
         materialTypes[0] = k;
         materialTypes[1] = l;
         materialTypes[3] = m;
-
-        buttonClick = new ButtonClick();
+        
     }
-    
 
+    
 
     public GameObject GetNextBlock()
     {
-        GameObject[] block = ListPlay();
+        GameObject block = blockTypes[cnt];
 
         try
         {
-            foreach (MeshRenderer mr in block[cnt].GetComponentsInChildren<MeshRenderer>())
+            foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
             {
                 Debug.Log("BlockFactory here");
                 mr.material = materialTypes[cnt];
@@ -60,31 +65,35 @@ public class Main2BlockFactory
         {
             Debug.Log("Error!!"+ex.Message);
         }
-        box = block[cnt].ToString().Substring(0, 6);
+        box = block.ToString().Substring(0, 6);
         Debug.Log("팩토리에서의" + box);
-        return block[cnt];
+        return block;
         cnt++;
     }
-
+    /*
     public GameObject[] ListPlay()
     {
+        main2BlockMovement = new Main2BlockMovement();
         GameObject[] gobj;
         Debug.Log("ListPlay");
-        string list = buttonClick.CurrentList();
+        Debug.Log("ListPlay s =" + s);
+        string list = s;
+        Debug.Log("리스트는 =" + list);
         string[] lists = list.Split(',');
         gobj = new GameObject[lists.Length];
         for (int i = 0; i < lists.Length; i++)
         {
             Debug.Log(i + "번째" + lists[i]);
 
-            gobj[i] = blockTypes[int.Parse(lists[i])]; Debug.Log("좀 돼라");
+            gobj[i] = blockTypes[int.Parse(lists[i])];
         }
         return gobj;
     }
+    */
 
     public string CurrentBox()
     {
         return box;
     }
-
+    
 }
