@@ -55,6 +55,7 @@
   <ItemGroup>
      <Compile Include="Assets\BlockFactory.cs" />
      <Compile Include="Assets\BlockMovement.cs" />
+     <Compile Include="Assets\ButtonClick.cs" />
      <Compile Include="Assets\Main2BlockFactory.cs" />
      <Compile Include="Assets\Main2BlockMovement.cs" />
      <None Include="Assets\NewSurfaceShader.shader" />

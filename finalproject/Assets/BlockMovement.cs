@@ -6,6 +6,7 @@
 */
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 using UnityEngine.SceneManagement;
 
@@ -18,15 +19,14 @@ public class BlockMovement : MonoBehaviour {
     public GameObject Block5;
     public GameObject Block6;
     public GameObject Block7;
-    public GameObject Block8;
-    public GameObject Block9;
-    public GameObject Block10;
     
 	public Material MATRED;
 	public Material MATBLUE;
 	public Material MATGREEN;
-    
 
+    Rigidbody rigidbody;
+    Dictionary<string, string> dictionary;
+    public string dicList = "";
     ArrayList boxes;
     BlockFactory blockFactory;
 	GameObject activeBlock;
@@ -50,22 +50,32 @@ public class BlockMovement : MonoBehaviour {
     }
 	void Start () {
         // BlockFactory 클래스 객체생성
-		blockFactory = new BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7, Block8, Block9, Block10
-                                        , MATRED, MATBLUE, MATGREEN);
+        dictionary = new Dictionary<string, string>()
+        {
+            {"Block","1,1,1"},
+            {"Block2","2,1,1"},
+            {"Block3","1,2,1"},
+            {"Block4","1,1,2"},
+            {"Block5","2,1,2"},
+            {"Block6","2,2,1"},
+            {"Block7","2,2,2"}
+        };
+		blockFactory = new BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7, MATRED, MATBLUE, MATGREEN);
         //grid생성
         initGrid();
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
 		activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
-		activeBlock.transform.position = new Vector3(-1, 2, 1);
+		activeBlock.transform.position = new Vector3(-1, -2, 1);
 		foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
 		{
 			Debug.Log("Start here");
 			mr.material = MATBLUE;
 		}
         boxes = new ArrayList();
-	}
+        
+    }
     
     
 
@@ -244,6 +254,8 @@ public class BlockMovement : MonoBehaviour {
         {
             Debug.Log("This-space-");
             cnt++;
+            rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
+            rigidbody.constraints = RigidbodyConstraints.None;
             /*
             Debug.Log("----------------------------------------------------------------------------");
             
@@ -267,20 +279,27 @@ public class BlockMovement : MonoBehaviour {
             }
             */
             
+            rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
             activeBlock.transform.position = new Vector3(
                        (int)Mathf.Round(activeBlock.transform.position.x),
                        (int)Mathf.Round(activeBlock.transform.position.y),
                        (int)Mathf.Round(activeBlock.transform.position.z));
-            
 
-            SetPositionBlocked();
+            if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
+            {
+                dicList = description;
+            }
+            Invoke("FreezeBlock", 2);
+            Invoke("SetPositionBlocked", 3);
+            
             dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
-                    blockFactory.CurrentBox();
+                    blockFactory.CurrentBox() + "," + dicList;
+            
             boxes.Add(dataSend);
             Debug.Log("이 박스의 정보는 " + dataSend);
-            activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, 2, 1), Quaternion.identity);
+            
             
         }
 
@@ -289,7 +308,9 @@ public class BlockMovement : MonoBehaviour {
     
 
     bool[,,] blocked = new bool[7,7,12];
-	private void initGrid() {
+
+    
+    private void initGrid() {
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {
 				for (int k = 0; k < 12; k++) {
@@ -347,6 +368,7 @@ public class BlockMovement : MonoBehaviour {
     private void SetPositionBlocked() // uses activeBlock
 	{
         
+
         foreach (Transform cube in activeBlock.transform.GetComponentsInChildren<Transform>())
 		{
             try
@@ -365,9 +387,12 @@ public class BlockMovement : MonoBehaviour {
                 SceneManager.LoadScene("Main");
             }
         }
-        
+        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, -2, 1), Quaternion.identity);
     }
-    
+    private void FreezeBlock()
+    {
+        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+    }
 
     private void SmoothMove(Vector3 start, Vector3 end)
     {

@@ -1,36 +1,56 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
+using System.Collections;
+using System;
+using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 public class ButtonClick : MonoBehaviour
 {
-    Main2BlockFactory main2BlockFactory;
-    Main2BlockMovement main2BlockMovement;
+
     public GameObject inputField;
     public GameObject btn;
+    public GameObject Canvas;
     public Text textList;
     string str = "";
-    public bool isStart = false;
+    public List<string> list;
+    Main2BlockMovement main2BlockMoveMent;
     public ButtonClick()
     {
-
+        
     }
-    public void OnClickList()
+    void Awake()
     {
-        main2BlockFactory = new Main2BlockFactory();
-        main2BlockMovement = new Main2BlockMovement();
+        //DontDestroyOnLoad(Canvas);
+    }
+    void Start()
+    {
+        list = new List<string>();
+    }
+    public void OnClick()
+    {
+        
         str = textList.text.ToString();
-        Debug.Log(textList.text);
-        isStart = true;
-        inputField.SetActive(false);
-        btn.SetActive(false);
+        list.Add(str);
+        foreach(string s in list)
+        {
+            Debug.Log("ArrayList = "+s);
+        }
+        //inputField.SetActive(false);
+        //btn.SetActive(false);
+        Invoke("StartGame",0.5f);
     }
-    public string CurrentList()
+    public void StartGame()
     {
-        return str;
+        SceneManager.LoadScene("main2",LoadSceneMode.Additive);
     }
-    public bool ListStart()
+    public List<string> CurrentList()
     {
-        return isStart;
+        foreach (string s in list)
+        {
+            Debug.Log("ArrayList2222 = " + s);
+        }
+        return list;
     }
 }

@@ -4,6 +4,7 @@
 
 
 */
+
 using UnityEngine;
 using System.Collections;
 using System;
@@ -23,21 +24,18 @@ public class Main2BlockMovement : MonoBehaviour
     public GameObject Block8;
     public GameObject Block9;
     public GameObject Block10;
-
     public Material MATRED;
     public Material MATBLUE;
     public Material MATGREEN;
-
-    public GameObject inputField;
-    public GameObject btn;
-    public Text textList;
-
+    
     GameObject[] objects;
     public int num = 0;
-    public string str = "";
-    public GameObject[] gobjs;
+    public string s = "";
+    GameObject[] gobjs;
     ArrayList boxes;
+    List<string> li;
     Main2BlockFactory main2BlockFactory;
+    ButtonClick buttonClick;
     GameObject activeBlock;
     bool isSpacebar = false;
     float moveSpeed = 10f;
@@ -54,24 +52,19 @@ public class Main2BlockMovement : MonoBehaviour
     // Use this for initialization
     public Main2BlockMovement()
     {
-
+        
     }
+    
     void Start()
     {
-        //grid생성
-        initGrid();
-        // get the active block
-        //activeBlock = GameObject.FindGameObjectWithTag("Player");
-        //상자 생성 위치는 0,0,1위치
-        
-        boxes = new ArrayList();
-        
-
-    }
-
-    void CreateBox(string str)
-    {
-        Debug.Log("왜안될까");
+        buttonClick = new ButtonClick();
+        li = new List<string>();
+        li = buttonClick.CurrentList();
+        foreach (string str in li)
+        {
+            s = str;
+        }
+        Debug.Log("main2" + s);
         gobjs = new GameObject[10];
         gobjs[0] = Block;
         gobjs[1] = Block2;
@@ -83,7 +76,7 @@ public class Main2BlockMovement : MonoBehaviour
         gobjs[7] = Block8;
         gobjs[8] = Block9;
         gobjs[9] = Block10;
-        string[] lists = str.Split(',');
+        string[] lists = s.Split(',');
         for (int i = 0; i < lists.Length; i++)
         {
             gobjs[i] = gobjs[int.Parse(lists[i])];
@@ -93,29 +86,30 @@ public class Main2BlockMovement : MonoBehaviour
         activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
 
         activeBlock.transform.position = new Vector3(-1, 2, 1);
-        
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
         {
             Debug.Log("Start here");
             mr.material = MATBLUE;
         }
-    }
-    void OnClickList()
-    {
-        str = textList.text.ToString();
-        Debug.Log(textList.text);
-        inputField.SetActive(false);
-        btn.SetActive(false);
-        CreateBox(str);
+        //grid생성
+        initGrid();
+        // get the active block
+        //activeBlock = GameObject.FindGameObjectWithTag("Player");
+        //상자 생성 위치는 0,0,1위치
+        boxes = new ArrayList();
+        
     }
 
+    public string Ven()
+    {
+        return s;
+    }
+    
     // Update is called once per frame
     void Update()
     {
-        
         if (!isMoving && !isRotating)
         {
-
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 Vector3 futurePos = activeBlock.transform.position + new Vector3(-1, 0, 0);
@@ -156,6 +150,7 @@ public class Main2BlockMovement : MonoBehaviour
             {
                 Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
                 Quaternion futureRot = activeBlock.transform.rotation;
+                
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
@@ -379,7 +374,7 @@ public class Main2BlockMovement : MonoBehaviour
                 }
                 catch
                 {
-                    SceneManager.LoadScene("Main2");
+                    SceneManager.LoadScene("main2");
                 }
 
 
@@ -418,7 +413,7 @@ public class Main2BlockMovement : MonoBehaviour
             }
             catch
             {
-                SceneManager.LoadScene("Main2");
+                SceneManager.LoadScene("main2");
             }
 
         }

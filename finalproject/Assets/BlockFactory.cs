@@ -14,9 +14,8 @@ public class BlockFactory {
     {
 
     }
-	public BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h, GameObject i, GameObject j,
-                        Material k, Material l, Material m) {
-		blockTypes = new GameObject[10];
+	public BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, Material k, Material l, Material m) {
+		blockTypes = new GameObject[7];
 		blockTypes[0] = a;
 		blockTypes[1] = b;
 		blockTypes[2] = c;
@@ -24,9 +23,6 @@ public class BlockFactory {
         blockTypes[4] = e;
         blockTypes[5] = f;
         blockTypes[6] = g;
-        blockTypes[7] = h;
-        blockTypes[8] = i;
-        blockTypes[9] = j;
 
         materialTypes = new Material[4];
 		materialTypes[0] = k;
@@ -37,7 +33,7 @@ public class BlockFactory {
 	}
 
 	public GameObject GetNextBlock() {	
-		int num = ((int)Mathf.Round (Random.value * 10000)) % 10;
+		int num = ((int)Mathf.Round (Random.value * 10000)) % 7;
 		GameObject block = blockTypes[num];
 		num = ((int)Mathf.Round (Random.value * 10000)) % 3;
 		foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
