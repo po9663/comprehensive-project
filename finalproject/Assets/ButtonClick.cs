@@ -13,8 +13,6 @@ public class ButtonClick : MonoBehaviour
     public GameObject btn;
     public GameObject Canvas;
     public Text textList;
-    string str = "";
-    public List<string> list;
     Main2BlockMovement main2BlockMoveMent;
     public ButtonClick()
     {
@@ -26,31 +24,20 @@ public class ButtonClick : MonoBehaviour
     }
     void Start()
     {
-        list = new List<string>();
+
     }
+    
     public void OnClick()
     {
         
-        str = textList.text.ToString();
-        list.Add(str);
-        foreach(string s in list)
-        {
-            Debug.Log("ArrayList = "+s);
-        }
+        Singleton.Instance.strList = textList.text.ToString();
         //inputField.SetActive(false);
         //btn.SetActive(false);
         Invoke("StartGame",0.5f);
     }
     public void StartGame()
     {
-        SceneManager.LoadScene("main2",LoadSceneMode.Additive);
+        SceneManager.LoadScene("main2");
     }
-    public List<string> CurrentList()
-    {
-        foreach (string s in list)
-        {
-            Debug.Log("ArrayList2222 = " + s);
-        }
-        return list;
-    }
+    
 }

@@ -12,9 +12,6 @@ public class Main2BlockFactory
     GameObject[] blockTypes;
     Material[] materialTypes;
     public string box = "";
-    public int cnt = 0;
-    public string s = "";
-    Main2BlockMovement main2BlockMovement;
 
 
 
@@ -24,10 +21,10 @@ public class Main2BlockFactory
     {
 
     }
-    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h, GameObject i, GameObject j,
+    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g,
                         Material k, Material l, Material m)
     {
-        blockTypes = new GameObject[10];
+        blockTypes = new GameObject[7];
         blockTypes[0] = a;
         blockTypes[1] = b;
         blockTypes[2] = c;
@@ -35,9 +32,6 @@ public class Main2BlockFactory
         blockTypes[4] = e;
         blockTypes[5] = f;
         blockTypes[6] = g;
-        blockTypes[7] = h;
-        blockTypes[8] = i;
-        blockTypes[9] = j;
 
         materialTypes = new Material[4];
         materialTypes[0] = k;
@@ -48,16 +42,17 @@ public class Main2BlockFactory
 
     
 
-    public GameObject GetNextBlock()
+    public GameObject GetNextBlock(int num)
     {
-        GameObject block = blockTypes[cnt];
-
+        int mNum = 0;
+        GameObject block = blockTypes[num];
+        mNum = ((int)Mathf.Round(Random.value * 10000)) % 3;
         try
         {
             foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
             {
                 Debug.Log("BlockFactory here");
-                mr.material = materialTypes[cnt];
+                mr.material = materialTypes[mNum];
             }
             
         }
@@ -67,29 +62,10 @@ public class Main2BlockFactory
         }
         box = block.ToString().Substring(0, 6);
         Debug.Log("팩토리에서의" + box);
-        return block;
-        cnt++;
+        
+        return block;;
     }
-    /*
-    public GameObject[] ListPlay()
-    {
-        main2BlockMovement = new Main2BlockMovement();
-        GameObject[] gobj;
-        Debug.Log("ListPlay");
-        Debug.Log("ListPlay s =" + s);
-        string list = s;
-        Debug.Log("리스트는 =" + list);
-        string[] lists = list.Split(',');
-        gobj = new GameObject[lists.Length];
-        for (int i = 0; i < lists.Length; i++)
-        {
-            Debug.Log(i + "번째" + lists[i]);
-
-            gobj[i] = blockTypes[int.Parse(lists[i])];
-        }
-        return gobj;
-    }
-    */
+    
 
     public string CurrentBox()
     {

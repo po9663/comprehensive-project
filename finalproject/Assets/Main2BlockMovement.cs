@@ -21,19 +21,21 @@ public class Main2BlockMovement : MonoBehaviour
     public GameObject Block5;
     public GameObject Block6;
     public GameObject Block7;
-    public GameObject Block8;
-    public GameObject Block9;
-    public GameObject Block10;
     public Material MATRED;
     public Material MATBLUE;
     public Material MATGREEN;
+    Rigidbody rigidbody;
+    GameObject[] gameObjects;
     
-    GameObject[] objects;
-    public int num = 0;
+    public int[] num;
+    public int boxNum = 0;
+    int cnt = 0;
+    
     public string s = "";
+    public string dicList = "";
     GameObject[] gobjs;
     ArrayList boxes;
-    List<string> li;
+    Dictionary<string, string> dictionary;
     Main2BlockFactory main2BlockFactory;
     ButtonClick buttonClick;
     GameObject activeBlock;
@@ -57,35 +59,43 @@ public class Main2BlockMovement : MonoBehaviour
     
     void Start()
     {
-        buttonClick = new ButtonClick();
-        li = new List<string>();
-        li = buttonClick.CurrentList();
-        foreach (string str in li)
+        num = new int[7];
+        dictionary = new Dictionary<string, string>()
         {
-            s = str;
-        }
-        Debug.Log("main2" + s);
-        gobjs = new GameObject[10];
-        gobjs[0] = Block;
-        gobjs[1] = Block2;
-        gobjs[2] = Block3;
-        gobjs[3] = Block4;
-        gobjs[4] = Block5;
-        gobjs[5] = Block6;
-        gobjs[6] = Block7;
-        gobjs[7] = Block8;
-        gobjs[8] = Block9;
-        gobjs[9] = Block10;
+            {"Block","1,1,1"},
+            {"Block2","2,1,1"},
+            {"Block3","1,2,1"},
+            {"Block4","1,1,2"},
+            {"Block5","2,1,2"},
+            {"Block6","2,2,1"},
+            {"Block7","2,2,2"}
+        };
+        s = Singleton.Instance.strList;
+        Debug.Log("main2 " + s);
+        gameObjects = new GameObject[7];
+        gameObjects[0] = Block;
+        gameObjects[1] = Block2;
+        gameObjects[2] = Block3;
+        gameObjects[3] = Block4;
+        gameObjects[4] = Block5;
+        gameObjects[5] = Block6;
+        gameObjects[6] = Block7;
+        gobjs = new GameObject[7];
+        
         string[] lists = s.Split(',');
+        for(int i = 0; i<lists.Length; i++)
+        {
+            num[i] = int.Parse(lists[i]);
+        }
         for (int i = 0; i < lists.Length; i++)
         {
-            gobjs[i] = gobjs[int.Parse(lists[i])];
+            gobjs[i] = gameObjects[num[i]];
         }
-        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7], gobjs[8], gobjs[9], MATRED, MATBLUE, MATGREEN);
+        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], MATRED, MATBLUE, MATGREEN);
 
-        activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
+        activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(boxNum), new Vector3(0, 0, 1), Quaternion.identity);
 
-        activeBlock.transform.position = new Vector3(-1, 2, 1);
+        activeBlock.transform.position = new Vector3(-1, -2, 1);
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
         {
             Debug.Log("Start here");
@@ -282,7 +292,10 @@ public class Main2BlockMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Debug.Log("This-space-");
-            isSpacebar = true;
+            cnt++;
+            boxNum++;
+            rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
+            rigidbody.constraints = RigidbodyConstraints.None;
             /*
             Debug.Log("----------------------------------------------------------------------------");
             
@@ -305,20 +318,26 @@ public class Main2BlockMovement : MonoBehaviour
                 zNextCheckPoint = 1;
             }
             */
+            rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
+
             activeBlock.transform.position = new Vector3(
                        (int)Mathf.Round(activeBlock.transform.position.x),
                        (int)Mathf.Round(activeBlock.transform.position.y),
                        (int)Mathf.Round(activeBlock.transform.position.z));
 
+            if (dictionary.TryGetValue(main2BlockFactory.CurrentBox(), out string description))
+            {
+                dicList = description;
+            }
+            Invoke("FreezeBlock", 2);
+            Invoke("SetPositionBlocked", 3);
 
-            SetPositionBlocked();
             dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
-                    main2BlockFactory.CurrentBox();
+                    main2BlockFactory.CurrentBox() + dicList;
             boxes.Add(dataSend);
             Debug.Log("이 박스의 정보는 " + dataSend);
-            activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(), new Vector3(-1, 2, 1), Quaternion.identity);
             
 
         }
@@ -387,11 +406,9 @@ public class Main2BlockMovement : MonoBehaviour
 			return true;
 		return false;*/
     }
-    int cnt = 0;
     private void SetPositionBlocked() // uses activeBlock
     {
-        string location = "";
-        cnt++;
+        
         foreach (Transform cube in activeBlock.transform.GetComponentsInChildren<Transform>())
         {
             
@@ -403,24 +420,22 @@ public class Main2BlockMovement : MonoBehaviour
                     int j = (int)Mathf.Round(cube.transform.position.y) + 3;
                     int k = (int)Mathf.Round(cube.transform.position.z);
                     blocked[i, j, k] = true;
-                    if (isSpacebar)
-                    {
-                        location = cnt.ToString() + "," + i.ToString() + "," + j.ToString() + "," + k.ToString();
-                        boxes.Add(location);
-                        Debug.Log(location);
-                    }
+                    
                 }
             }
             catch
             {
                 SceneManager.LoadScene("main2");
             }
-
+            activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(boxNum), new Vector3(-1, -2, 1), Quaternion.identity);
+            
         }
-
-        Debug.Log(boxes.ToArray());
+        
     }
-
+    private void FreezeBlock()
+    {
+        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+    }
 
     private void SmoothMove(Vector3 start, Vector3 end)
     {
