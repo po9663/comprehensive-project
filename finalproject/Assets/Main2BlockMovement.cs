@@ -37,9 +37,7 @@ public class Main2BlockMovement : MonoBehaviour
     ArrayList boxes;
     Dictionary<string, string> dictionary;
     Main2BlockFactory main2BlockFactory;
-    ButtonClick buttonClick;
     GameObject activeBlock;
-    bool isSpacebar = false;
     float moveSpeed = 10f;
     //float defaultFallSpeed = 1f;
     //float fallSpeed = 1f;
@@ -52,10 +50,6 @@ public class Main2BlockMovement : MonoBehaviour
     float tElapsed;
     public string dataSend = ""; //데이터 전송
     // Use this for initialization
-    public Main2BlockMovement()
-    {
-        
-    }
     
     void Start()
     {
@@ -92,28 +86,23 @@ public class Main2BlockMovement : MonoBehaviour
             gobjs[i] = gameObjects[num[i]];
         }
         main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], MATRED, MATBLUE, MATGREEN);
-
-        activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(boxNum), new Vector3(0, 0, 1), Quaternion.identity);
-
-        activeBlock.transform.position = new Vector3(-1, -2, 1);
+        initGrid();
+        CreateBox(boxNum);
+        
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
         {
             Debug.Log("Start here");
             mr.material = MATBLUE;
         }
         //grid생성
-        initGrid();
+        
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
         boxes = new ArrayList();
         
     }
-
-    public string Ven()
-    {
-        return s;
-    }
+    
     
     // Update is called once per frame
     void Update()
@@ -329,8 +318,8 @@ public class Main2BlockMovement : MonoBehaviour
             {
                 dicList = description;
             }
-            Invoke("FreezeBlock", 2);
-            Invoke("SetPositionBlocked", 3);
+            Invoke("FreezeBlock", 2.0f);
+            Invoke("SetPositionBlocked", 3.0f);
 
             dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
@@ -343,7 +332,11 @@ public class Main2BlockMovement : MonoBehaviour
         }
 
     }
-
+    private void CreateBox(int num)
+    {
+        activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(num), new Vector3(-1, -2, 1), Quaternion.identity);
+        Debug.Log(num + "번째가 생성되었습니다.");
+    }
 
 
     bool[,,] blocked = new bool[7, 7, 12];
@@ -427,10 +420,10 @@ public class Main2BlockMovement : MonoBehaviour
             {
                 SceneManager.LoadScene("main2");
             }
-            activeBlock = (GameObject)GameObject.Instantiate(main2BlockFactory.GetNextBlock(boxNum), new Vector3(-1, -2, 1), Quaternion.identity);
+            
             
         }
-        
+        CreateBox(boxNum);
     }
     private void FreezeBlock()
     {

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
 public class Main2BlockFactory
 {
@@ -12,17 +11,8 @@ public class Main2BlockFactory
     GameObject[] blockTypes;
     Material[] materialTypes;
     public string box = "";
-
-
-
-
-
-    public Main2BlockFactory()
-    {
-
-    }
-    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g,
-                        Material k, Material l, Material m)
+    
+    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, Material k, Material l, Material m)
     {
         blockTypes = new GameObject[7];
         blockTypes[0] = a;
@@ -47,23 +37,16 @@ public class Main2BlockFactory
         int mNum = 0;
         GameObject block = blockTypes[num];
         mNum = ((int)Mathf.Round(Random.value * 10000)) % 3;
-        try
+        foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
         {
-            foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
-            {
-                Debug.Log("BlockFactory here");
-                mr.material = materialTypes[mNum];
-            }
-            
-        }
-        catch(Exception ex)
-        {
-            Debug.Log("Error!!"+ex.Message);
+            Debug.Log("BlockFactory here");
+            mr.material = materialTypes[mNum];
         }
         box = block.ToString().Substring(0, 6);
         Debug.Log("팩토리에서의" + box);
+
+        return block; ;
         
-        return block;;
     }
     
 

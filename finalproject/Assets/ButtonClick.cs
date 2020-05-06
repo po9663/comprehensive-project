@@ -13,19 +13,6 @@ public class ButtonClick : MonoBehaviour
     public GameObject btn;
     public GameObject Canvas;
     public Text textList;
-    Main2BlockMovement main2BlockMoveMent;
-    public ButtonClick()
-    {
-        
-    }
-    void Awake()
-    {
-        //DontDestroyOnLoad(Canvas);
-    }
-    void Start()
-    {
-
-    }
     
     public void OnClick()
     {

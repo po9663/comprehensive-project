@@ -66,8 +66,7 @@ public class BlockMovement : MonoBehaviour {
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
-		activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 1), Quaternion.identity);
-		activeBlock.transform.position = new Vector3(-1, -2, 1);
+        CreateBox();
 		foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
 		{
 			Debug.Log("Start here");
@@ -305,7 +304,10 @@ public class BlockMovement : MonoBehaviour {
 
     }
 
-    
+    private void CreateBox()
+    {
+        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, -2, 1), Quaternion.identity);
+    }
 
     bool[,,] blocked = new bool[7,7,12];
 
@@ -387,7 +389,7 @@ public class BlockMovement : MonoBehaviour {
                 SceneManager.LoadScene("Main");
             }
         }
-        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, -2, 1), Quaternion.identity);
+        CreateBox();
     }
     private void FreezeBlock()
     {
