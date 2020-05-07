@@ -22,5 +22,4 @@ public class Singleton
         
     }
     public string strList = "";
-    public int number = 0;
 }

@@ -27,12 +27,13 @@ public class BlockMovement : MonoBehaviour {
     Rigidbody rigidbody;
     Dictionary<string, string> dictionary;
     public string dicList = "";
-    ArrayList boxes;
+    List<string> boxes;
     BlockFactory blockFactory;
 	GameObject activeBlock;
 	float moveSpeed = 10f;
     //float defaultFallSpeed = 1f;
     //float fallSpeed = 1f;
+    
     int cnt = 0;
 	//float zNextCheckPoint = 1f;
     //bool isFalling = true;
@@ -52,7 +53,7 @@ public class BlockMovement : MonoBehaviour {
         // BlockFactory 클래스 객체생성
         dictionary = new Dictionary<string, string>()
         {
-            {"Block","1,1,1"},
+            {"Block ","1,1,1"},
             {"Block2","2,1,1"},
             {"Block3","1,2,1"},
             {"Block4","1,1,2"},
@@ -72,7 +73,7 @@ public class BlockMovement : MonoBehaviour {
 			Debug.Log("Start here");
 			mr.material = MATBLUE;
 		}
-        boxes = new ArrayList();
+        boxes = new List<string>();
         
     }
     
@@ -291,15 +292,9 @@ public class BlockMovement : MonoBehaviour {
             Invoke("FreezeBlock", 2);
             Invoke("SetPositionBlocked", 3);
             
-            dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
-                    blockFactory.CurrentBox() + "," + dicList;
             
-            boxes.Add(dataSend);
-            Debug.Log("이 박스의 정보는 " + dataSend);
-            
-            
+
+
         }
 
     }
@@ -381,7 +376,7 @@ public class BlockMovement : MonoBehaviour {
                     int j = (int)Mathf.Round(cube.transform.position.y) + 3;
                     int k = (int)Mathf.Round(cube.transform.position.z);
                     blocked[i, j, k] = true;
-
+                    
                 }
             }
             catch
@@ -389,6 +384,15 @@ public class BlockMovement : MonoBehaviour {
                 SceneManager.LoadScene("Main");
             }
         }
+
+        dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
+                    ((int)Mathf.Round(activeBlock.transform.position.y + 2)) + "," +
+                    ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
+                    blockFactory.CurrentBox() + "," + dicList;
+        boxes.Add(dataSend);
+        Debug.Log("이 박스의 정보는 " + dataSend);
+        
+
         CreateBox();
     }
     private void FreezeBlock()

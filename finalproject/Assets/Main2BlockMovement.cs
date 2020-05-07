@@ -34,7 +34,7 @@ public class Main2BlockMovement : MonoBehaviour
     public string s = "";
     public string dicList = "";
     GameObject[] gobjs;
-    ArrayList boxes;
+    List<string> boxes;
     Dictionary<string, string> dictionary;
     Main2BlockFactory main2BlockFactory;
     GameObject activeBlock;
@@ -99,7 +99,7 @@ public class Main2BlockMovement : MonoBehaviour
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
-        boxes = new ArrayList();
+        boxes = new List<string>();
         
     }
     
