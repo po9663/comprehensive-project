@@ -102,9 +102,9 @@ public class BlockMovement : Agent {
         bool Isy = false;
         bool Isz = false;
         string [] bsize = boxsize.Split(',');
-        int xsize = Int32.Parse(bsize[0])-1;
-        int ysize = Int32.Parse(bsize[1])-1;
-        int zsize = Int32.Parse(bsize[2])-1;
+        int xsize = Int32.Parse(bsize[0]);
+        int ysize = Int32.Parse(bsize[1]);
+        int zsize = Int32.Parse(bsize[2]);
         vlist= new ArrayList();
         if (xsize == 0 && ysize !=0)
         {
@@ -114,12 +114,12 @@ public class BlockMovement : Agent {
         {
             Isz = true;
         }
-        for (int i=0; i<7; i++)
+        for (int i=0; i<5; i++)
         {
             //좌표수 만큼 반복 7x7x12
-            for(int j=0; j<7; j++)
+            for(int j=0; j<5; j++)
             {
-                for(int k=0; k<12; k++)
+                for(int k=0; k<10; k++)
                 {
                     if (blocked[i,j,k] == true)
                     {
@@ -153,10 +153,10 @@ public class BlockMovement : Agent {
                             }
                             Isy = false;
                         }
-                        if (count!=0 && count == xsize + ysize + zsize)
+                        if (count!=0 && count == xsize * ysize * zsize)
                         {
                             //들어갈 수 있다.
-                            string data = xsize + "," + ysize + "," + zsize;
+                            string data = i + "," + j + "," + k;
                             vlist.Add(data);
                             Debug.Log(data + "= 최종적으로 들어갈 수 있다");
                         }
@@ -180,16 +180,19 @@ public class BlockMovement : Agent {
     public override void CollectObservations()
     {
         currentBox=blockFactory.CurrentBox();
-        //BlockCheck();
+        BlockCheck();
 
         Vector3 relativePosition = activeBlock.transform.position;
-        
-        // 정규화된 값
-        AddVectorObs(Mathf.Clamp(relativePosition.x / 5f, -1f, 1f));
-        AddVectorObs(Mathf.Clamp((relativePosition.y - 5f) / 5f, -1f, 1f));
-        AddVectorObs(Mathf.Clamp(relativePosition.z / 5f, -1f, 1f));
 
-        /*for (int i=0; i<vlist.Count; i++)
+        // 정규화된 값
+        //AddVectorObs(Mathf.Clamp(relativePosition.x / 7f, -1f, 1f));
+        //AddVectorObs(Mathf.Clamp(relativePosition.y / 7f, -1f, 1f));
+        //AddVectorObs(Mathf.Clamp(relativePosition.z / 12f, -1f, 1f));
+        AddVectorObs(relativePosition.x);
+        AddVectorObs(relativePosition.y);
+        AddVectorObs(relativePosition.z);
+        
+        for (int i=0; i<vlist.Count; i++)
         {
             string temp = vlist[i].ToString();
             string[] bp = temp.Split(',');
@@ -197,14 +200,13 @@ public class BlockMovement : Agent {
             int yp = Int32.Parse(bp[1]);
             int zp = Int32.Parse(bp[2]);
             Vector3 distanceToblock = new Vector3(xp, yp, zp)-activeBlock.transform.position;
-            // 정규화된 값
             Debug.Log(distanceToblock);
-            AddVectorObs(Mathf.Clamp(distanceToblock.x / 5f, -1f, 1f));
-            AddVectorObs(Mathf.Clamp((distanceToblock.y - 5f) / 5f, -1f, 1f));
-            AddVectorObs(Mathf.Clamp(distanceToblock.z / 5f, -1f, 1f));
+            AddVectorObs(Mathf.Clamp(distanceToblock.x / 7f, -1f, 1f));
+            AddVectorObs(Mathf.Clamp(distanceToblock.y / 7f, -1f, 1f));
+            AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
 
 
-        }*/
+        }
         
 
 
@@ -213,18 +215,11 @@ public class BlockMovement : Agent {
     public override void AgentAction(float[] vectorAction)
     {
         AddReward(-0.01f); //가만히 있는것 방지
-        //float horizontalInput = vectorAction[0];
-        //float forwardInput = vectorAction[1];
-        //float verticalInput = vectorAction[2];
-        //float dementionInput = vectorAction[3];
-        /*var actionX = 5000f * Mathf.Clamp(vectorAction[0], -1f, 1f);
-        var actionY = 5000f * Mathf.Clamp(vectorAction[1], -1f, 1f);
-        var actionZ = 5000f * Mathf.Clamp(vectorAction[2], -1f, 1f);
-        */
+        
         int movement = Mathf.FloorToInt(vectorAction[0]);
        
         int block = Mathf.FloorToInt(vectorAction[1]);
-        // Look up the index in the movement action list:
+        
         if (movement == 1) {
             if (!isMoving && !isRotating)
             {
@@ -385,9 +380,9 @@ public class BlockMovement : Agent {
             Invoke("FreezeBlock", 2);
             Invoke("SetPositionBlocked", 3);
 
-            dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
+            dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
+                    ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
+                    ((int)Mathf.Round(activeBlock.transform.position.z)) + "," +
                     blockFactory.CurrentBox() + "," + dicList;
 
             boxes.Add(dataSend);
@@ -678,7 +673,7 @@ public class BlockMovement : Agent {
 
             private void CreateBox()
     {
-        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(-1, -2, 1), Quaternion.identity);
+        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 0), Quaternion.identity);
         activeBlock.transform.parent = Boundaries.transform;
     }
 
@@ -692,8 +687,8 @@ public class BlockMovement : Agent {
                     
 					blocked[i,j,k] = false;
                     
-					if (i == 0 || j == 0 || k == 0 || i == 6 || j == 6 || k == 11)
-					{
+					if ((i >= 5) || (j >= 5) || (k >= 10))
+                    {
 						blocked[i,j,k] = true;
                     }
                     
@@ -708,29 +703,34 @@ public class BlockMovement : Agent {
 		{
 			if (cube.childCount == 0)
 			{
-                
+
                 //Debug.Log ("Cube Pos: " + cube.position);
                 //Debug.Log ("Future Pos: " + futurePos);
                 try
                 {
-                    if (blocked[
-                            (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) + 3,
-                            (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) + 3,
+                    if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0))
+                    {
+                        return true;
+                    }
+                    else if (blocked[
+                            (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
+                            (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)),
                             (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
                     {
 
                         return true;
                     }
+
                 }
                 catch
                 {
                     SceneManager.LoadScene("Main");
                 }
-               
-                
-                        
-                
-			}
+
+
+
+
+            }
 		}
 		return false;
 
@@ -750,8 +750,8 @@ public class BlockMovement : Agent {
             {
                 if (cube.childCount == 0)
                 {
-                    int i = (int)Mathf.Round(cube.transform.position.x) + 3;
-                    int j = (int)Mathf.Round(cube.transform.position.y) + 3;
+                    int i = (int)Mathf.Round(cube.transform.position.x);
+                    int j = (int)Mathf.Round(cube.transform.position.y);
                     int k = (int)Mathf.Round(cube.transform.position.z);
                     blocked[i, j, k] = true;
 
