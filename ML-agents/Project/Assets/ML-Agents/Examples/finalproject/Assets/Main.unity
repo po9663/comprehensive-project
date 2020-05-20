@@ -123,6 +123,8 @@ GameObject:
   - component: {fileID: 55423154}
   - component: {fileID: 55423156}
   - component: {fileID: 55423155}
+  - component: {fileID: 55423158}
+  - component: {fileID: 55423157}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -159,7 +161,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 50
+  maxStep: 10
   Boundaries: {fileID: 55423153}
   Block: {fileID: 164086, guid: 70de72ebec1aa6845892adc1d5d41f07, type: 3}
   Block2: {fileID: 164086, guid: d3f78473e05b3e343b8c9c48026ffca2, type: 3}
@@ -171,8 +173,8 @@ MonoBehaviour:
   MATRED: {fileID: 2100000, guid: 24cfe93e1109445f7aad9f646023909d, type: 2}
   MATBLUE: {fileID: 2100000, guid: b7fd9e578ab474da3902932a011138a9, type: 2}
   MATGREEN: {fileID: 2100000, guid: 9251083d954a84499955ea131c1eb84e, type: 2}
-  dicList: 
   boxsize: 
+  dicList: 
   currentBox: 
   dataSend: 
 --- !u!114 &55423156
@@ -188,9 +190,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 6
+    vectorObservationSize: 753
     numStackedVectorObservations: 1
-    vectorActionSize: 0600000001000000
+    vectorActionSize: 0600000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
@@ -199,6 +201,33 @@ MonoBehaviour:
   m_BehaviorName: My Behavior
   m_TeamID: 0
   m_UseChildSensors: 1
+--- !u!114 &55423157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55423153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  RepeatAction: 1
+  offsetStep: 0
+--- !u!114 &55423158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55423153}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &541841907
 GameObject:
   m_ObjectHideFlags: 0
@@ -396,7 +425,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   maxStep: 0
-  Boundaries: {fileID: 0}
+  Boundaries: {fileID: 55423153}
   Block: {fileID: 164086, guid: 70de72ebec1aa6845892adc1d5d41f07, type: 3}
   Block2: {fileID: 164086, guid: d3f78473e05b3e343b8c9c48026ffca2, type: 3}
   Block3: {fileID: 164086, guid: 2969595add980b24ca346b8d1a737d1b, type: 3}
@@ -407,8 +436,8 @@ MonoBehaviour:
   MATRED: {fileID: 2100000, guid: 24cfe93e1109445f7aad9f646023909d, type: 2}
   MATBLUE: {fileID: 2100000, guid: b7fd9e578ab474da3902932a011138a9, type: 2}
   MATGREEN: {fileID: 2100000, guid: 9251083d954a84499955ea131c1eb84e, type: 2}
-  dicList: 
   boxsize: 
+  dicList: 
   currentBox: 
   dataSend: 
 --- !u!54 &1838706710

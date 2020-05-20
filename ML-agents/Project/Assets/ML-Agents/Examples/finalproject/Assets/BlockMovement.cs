@@ -21,7 +21,6 @@ public class BlockMovement : Agent {
     public GameObject Block5;
     public GameObject Block6;
     public GameObject Block7;
-    
 	public Material MATRED;
 	public Material MATBLUE;
 	public Material MATGREEN;
@@ -31,8 +30,8 @@ public class BlockMovement : Agent {
 
     Rigidbody rigidbody;
     Dictionary<string, string> dictionary;
-    public string dicList = "";
     public string boxsize = "";
+    public string dicList = "";
     ArrayList vlist;
     ArrayList boxes;
     BlockFactory blockFactory;
@@ -62,7 +61,7 @@ public class BlockMovement : Agent {
         // BlockFactory 클래스 객체생성
         dictionary = new Dictionary<string, string>()
         {
-            {"Block","1,1,1"},
+            {"Block ","1,1,1"},
             {"Block2","2,1,1"},
             {"Block3","1,2,1"},
             {"Block4","1,1,2"},
@@ -84,12 +83,17 @@ public class BlockMovement : Agent {
             mr.material = MATBLUE;
         }
         boxes = new ArrayList();
+       
     }
+    
     public override void AgentReset()
     {
         isDead = false;
-        //InitializeAgent();
+        dicList = "";
+        boxsize = "";
+        // InitializeAgent();
     }
+
     void BlockCheck()
     {
         int count = 0;
@@ -98,10 +102,14 @@ public class BlockMovement : Agent {
         {
             boxsize = description;
         }
+        Debug.Log("size=" + boxsize);
         //x,y,z 좌표 순서
         bool Isy = false;
         bool Isz = false;
         string [] bsize = boxsize.Split(',');
+        Debug.Log("bs0="+bsize[0]);
+        Debug.Log("bs1=" + bsize[1]);
+        Debug.Log("bs2=" + bsize[2]);
         int xsize = Int32.Parse(bsize[0]);
         int ysize = Int32.Parse(bsize[1]);
         int zsize = Int32.Parse(bsize[2]);
@@ -175,11 +183,16 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        
+        int num = 250 - vlist.Count;
+        for(int a=0; a<num; a++)
+        {
+            vlist.Add("0,0,0");
+        }
+        Debug.Log("Vlist 크기 : " + vlist.Count);
     }
     public override void CollectObservations()
     {
-        currentBox=blockFactory.CurrentBox();
+        //currentBox=blockFactory.CurrentBox();
         BlockCheck();
 
         Vector3 relativePosition = activeBlock.transform.position;
@@ -188,10 +201,11 @@ public class BlockMovement : Agent {
         //AddVectorObs(Mathf.Clamp(relativePosition.x / 7f, -1f, 1f));
         //AddVectorObs(Mathf.Clamp(relativePosition.y / 7f, -1f, 1f));
         //AddVectorObs(Mathf.Clamp(relativePosition.z / 12f, -1f, 1f));
-        AddVectorObs(relativePosition.x);
-        AddVectorObs(relativePosition.y);
-        AddVectorObs(relativePosition.z);
-        
+        //AddVectorObs(relativePosition.x);
+        //AddVectorObs(relativePosition.y);
+        //AddVectorObs(relativePosition.z);
+        AddVectorObs(relativePosition);
+
         for (int i=0; i<vlist.Count; i++)
         {
             string temp = vlist[i].ToString();
@@ -199,12 +213,13 @@ public class BlockMovement : Agent {
             int xp = Int32.Parse(bp[0]);
             int yp = Int32.Parse(bp[1]);
             int zp = Int32.Parse(bp[2]);
-            Vector3 distanceToblock = new Vector3(xp, yp, zp)-activeBlock.transform.position;
-            Debug.Log(distanceToblock);
-            AddVectorObs(Mathf.Clamp(distanceToblock.x / 7f, -1f, 1f));
-            AddVectorObs(Mathf.Clamp(distanceToblock.y / 7f, -1f, 1f));
-            AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
-
+            Vector3 blockTransform = new Vector3(xp, yp, zp);
+            Vector3 distanceToblock = blockTransform - relativePosition;
+            //Debug.Log(distanceToblock);
+            //AddVectorObs(Mathf.Clamp(distanceToblock.x / 7f, -1f, 1f));
+            //AddVectorObs(Mathf.Clamp(distanceToblock.y / 7f, -1f, 1f));
+            //AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
+            AddVectorObs(distanceToblock);
 
         }
         
@@ -212,19 +227,49 @@ public class BlockMovement : Agent {
 
         //Vector3 distanceToblock = activeBlock.transform.position;
     }
+    public override float[] Heuristic()
+    {
+        if (Input.GetKey(KeyCode.D))
+        {
+            return new float[] { 2 };
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            return new float[] { 4 };
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            return new float[] { 1 };
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            return new float[] { 3 };
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            return new float[] { 5 };
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            return new float[] { 6 };
+        }
+        return new float[] { 0 };
+        
+    }
     public override void AgentAction(float[] vectorAction)
     {
-        AddReward(-0.01f); //가만히 있는것 방지
+        AddReward(-0.1f); //가만히 있는것 방지
         
-        int movement = Mathf.FloorToInt(vectorAction[0]);
+        var movement = Mathf.FloorToInt(vectorAction[0]);
        
-        int block = Mathf.FloorToInt(vectorAction[1]);
+        var block = Mathf.FloorToInt(vectorAction[1]);
         
         if (movement == 1) {
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionX = -1; // 왼쪽 방향키
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(-1, 0, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(-1f, 0, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
@@ -242,12 +287,14 @@ public class BlockMovement : Agent {
                     SmoothRotate();
                 }
             }
+
         }
         if (movement == 2) {
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionX = 1; // 오른쪽 방향키 x축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(1, 0, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(1f, 0, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
@@ -267,10 +314,11 @@ public class BlockMovement : Agent {
             }
         }
         if (movement == 3) {
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = -1; // 아래 방향키 z축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1f);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
@@ -290,10 +338,11 @@ public class BlockMovement : Agent {
             }
         }
         if (movement == 4) {
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = 1; // 위 방향키 z축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1f);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
@@ -313,10 +362,11 @@ public class BlockMovement : Agent {
             }
         }
         if (movement == 5) {
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionY = -1; // 아래 방향키 y축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, -1, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, -1f, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
@@ -336,10 +386,11 @@ public class BlockMovement : Agent {
             }
         }
         if (movement == 6) {
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionY = 1; // 위 방향키 y축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 1, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 1f, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
@@ -358,8 +409,8 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        
-        if(block == 1) {
+        if (block == 1)
+        {
             isBlocked = true;
             Debug.Log("This-space-");
             cnt++;
@@ -377,8 +428,8 @@ public class BlockMovement : Agent {
             {
                 dicList = description;
             }
-            Invoke("FreezeBlock", 2);
-            Invoke("SetPositionBlocked", 3);
+            //Invoke("FreezeBlock", 1);
+            //Invoke("SetPositionBlocked", 1);
 
             dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
@@ -387,288 +438,30 @@ public class BlockMovement : Agent {
 
             boxes.Add(dataSend);
             Debug.Log("이 박스의 정보는 " + dataSend);
+            FreezeBlock();
+            SetPositionBlocked();
         }
+        int rx = (int)activeBlock.transform.position.x;
+        //int ry = activeBlock.transform.position.x;
+        int rz = (int)activeBlock.transform.position.z;
 
-
+        
 
         if (isDead)
         {
             AddReward(-1.0f);
+            Debug.Log("죽음");
             Done();
         }
         if (isBlocked)
         {
-            AddReward(1.0f);
+            
+            AddReward(0.1f * (float)rx * (float)rz);
             isBlocked = false;
         }
 
     }
-    /*
-    void blocked()
-    {
-        Debug.Log("This-space-");
-        cnt++;
-        rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
-        rigidbody.constraints = RigidbodyConstraints.None;
-
-
-        rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
-        activeBlock.transform.position = new Vector3(
-                   (int)Mathf.Round(activeBlock.transform.position.x),
-                   (int)Mathf.Round(activeBlock.transform.position.y),
-                   (int)Mathf.Round(activeBlock.transform.position.z));
-
-        if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
-        {
-            dicList = description;
-        }
-        Invoke("FreezeBlock", 2);
-        Invoke("SetPositionBlocked", 3);
-
-        dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
-                ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
-                ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
-                blockFactory.CurrentBox() + "," + dicList;
-
-        boxes.Add(dataSend);
-        Debug.Log("이 박스의 정보는 " + dataSend);
-        isBlocked = false;
-    }*/
-    /*void Start () {
-        // BlockFactory 클래스 객체생성
-        dictionary = new Dictionary<string, string>()
-        {
-            {"Block","1,1,1"},
-            {"Block2","2,1,1"},
-            {"Block3","1,2,1"},
-            {"Block4","1,1,2"},
-            {"Block5","2,1,2"},
-            {"Block6","2,2,1"},
-            {"Block7","2,2,2"}
-        };
-		blockFactory = new BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7, MATRED, MATBLUE, MATGREEN);
-        //grid생성
-        initGrid();
-        // get the active block
-        //activeBlock = GameObject.FindGameObjectWithTag("Player");
-        //상자 생성 위치는 0,0,1위치
-        CreateBox();
-		foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
-		{
-			Debug.Log("Start here");
-			mr.material = MATBLUE;
-		}
-        boxes = new ArrayList();
-        
-    }*/
-
-
-
-            // Update is called once per frame
-            /*
-            void Update()
-            {   
-                if (!isMoving && !isRotating)
-                {
-
-                    if (Input.GetKeyDown(KeyCode.LeftArrow))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(-1, 0, 0);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-
-                    }
-                    else if (Input.GetKeyDown(KeyCode.RightArrow))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(1, 0, 0);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.UpArrow))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.DownArrow))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.W))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot))
-                        {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.S))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot))
-                        {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.A))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(-1, 0, 0);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot))
-                        {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.D))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(1, 0, 0);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot))
-                        {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.Q))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 1, 0);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot))
-                        {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.E))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, -1, 0);
-                        Quaternion futureRot = activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot))
-                        {
-                            SmoothMove(activeBlock.transform.position, futurePos);
-                        }
-                    }
-
-
-                    /*
-                    else if (Input.GetKeyDown(KeyCode.Q))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position;
-                        Quaternion futureRot = Quaternion.Euler(0, 0, 90) * activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothRotate(activeBlock.transform.rotation, futureRot);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.W))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position;
-                        Quaternion futureRot = Quaternion.Euler(90, 0, 0) * activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothRotate(activeBlock.transform.rotation, futureRot);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.E))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position;
-                        Quaternion futureRot = Quaternion.Euler(0, 0, -90) * activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothRotate(activeBlock.transform.rotation, futureRot);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.A))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position;
-                        Quaternion futureRot = Quaternion.Euler(0, 90, 0) * activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothRotate(activeBlock.transform.rotation, futureRot);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.S))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position;
-                        Quaternion futureRot = Quaternion.Euler(-90, 0, 0) * activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothRotate(activeBlock.transform.rotation, futureRot);
-                        }
-                    }
-                    else if (Input.GetKeyDown(KeyCode.D))
-                    {
-                        Vector3 futurePos = activeBlock.transform.position;
-                        Quaternion futureRot = Quaternion.Euler(0, -90, 0) * activeBlock.transform.rotation;
-                        if (!IsPositionBlocked(futurePos, futureRot)) {
-                            SmoothRotate(activeBlock.transform.rotation, futureRot);
-                        }
-                    }
-
-
-
-                    //fallSpeed = defaultFallSpeed;
-
-
-                    else if (Input.GetKey(KeyCode.Space)) 
-                    {
-                        Debug.Log("space");
-
-
-                        //fallSpeed = 20f;
-                    }
-
-                    //Debug.Log (fallSpeed);
-                }
-                else
-                {
-                    if (isMoving)
-                    {
-                        SmoothMove();
-                    }
-                    else if (isRotating)
-                    {
-                        SmoothRotate();
-                    }
-                }
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    Debug.Log("This-space-");
-                    cnt++;
-                    rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
-                    rigidbody.constraints = RigidbodyConstraints.None;
-
-
-                    rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
-                    activeBlock.transform.position = new Vector3(
-                               (int)Mathf.Round(activeBlock.transform.position.x),
-                               (int)Mathf.Round(activeBlock.transform.position.y),
-                               (int)Mathf.Round(activeBlock.transform.position.z));
-
-                    if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
-                    {
-                        dicList = description;
-                    }
-                    Invoke("FreezeBlock", 2);
-                    Invoke("SetPositionBlocked", 3);
-
-                    dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x) + 1) + "," +
-                            ((int)Mathf.Round(activeBlock.transform.position.y) + 2) + "," +
-                            ((int)Mathf.Round(activeBlock.transform.position.z) - 1) + "," +
-                            blockFactory.CurrentBox() + "," + dicList;
-
-                    boxes.Add(dataSend);
-                    Debug.Log("이 박스의 정보는 " + dataSend);
-
-
-                }
-
-            }*/
+    
 
 
             private void CreateBox()
