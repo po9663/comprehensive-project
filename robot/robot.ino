@@ -1,92 +1,60 @@
+#include <PCA9685.h>
+
+#include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-
-
-
-#include <SoftwareSerial.h> 
-#include <PS2X_lib.h>
-#include <Wire.h>
-#include "PCA9685.h"
 Adafruit_PWMServoDriver pwm=Adafruit_PWMServoDriver();
 
+PCA9685 pwmController(Wire, PCA9685_PhaseBalancer_Weaved); // Library using Wire1 and weaved phase balancing scheme
 
-#define IN1 4
-#define IN2 9
-#define IN3 6
-#define IN4 0
-#define IN5 1
-#define IN6 2
-#define PS2_DAT     12 
-#define PS2_CMD     11  
-#define PS2_SEL     10  
-#define PS2_CLK     13  
-
-//#define pressures   true
-#define pressures   false
-//#define rumble      true
-#define rumble      false
-
-PCA9685 pwmController;
-int angle;
-int error = 0;
-byte type = 0;
-byte vibrate = 0;
-
+// Linearly interpolates between standard 2.5%/12.5% phase length (102/512) for -90°/+90°
 PCA9685_ServoEvaluator pwmServo1;
-PCA9685_ServoEvaluator pwmServo2;
-PCA9685_ServoEvaluator pwmServo3;
-PCA9685_ServoEvaluator pwmServo4;
-PCA9685_ServoEvaluator pwmServo5;
-PCA9685_ServoEvaluator pwmServo6;
-int a;
-int b;
-int c;
-int d;
-int e;
-int f;
-
+PCA9685_ServoEvaluator pwmServo2(128,324,526);
 void setup() {
-   Serial.begin(57600);
-  pwm.begin();
-  Wire.setClock(400000);
-  Serial.begin(57600);
-  
+  Serial.begin(115200);
+  Wire.begin();                      // Wire must be started first
+  Wire.setClock(400000);             // Supported baud rates are 100kHz, 400kHz, and 1000kHz
+  pwmController.init(B000000);        // Address pins A5-A0 set to B000000
+  pwmController.setPWMFrequency(50);  // 50Hz provides 20ms standard servo phase length
+  pwmController.setChannelPWM(0, pwmServo1.pwmForAngle(-90));
+  Serial.println(pwmController.getChannelPWM(0)); // Should output 102 for -90°
+
+  // Showing linearity for midpoint, 205 away from both -90° and 90°
+    Serial.println(pwmServo1.pwmForAngle(0));   // Should output 307 for 0°
+
+    pwmController.setChannelPWM(0, pwmServo1.pwmForAngle(90));
+    Serial.println(pwmController.getChannelPWM(0)); // Should output 512 for +90°
+
+    pwmController.setChannelPWM(1, pwmServo2.pwmForAngle(-90));
+    Serial.println(pwmController.getChannelPWM(1)); // Should output 128 for -90°
+
+    // Showing less resolution in the -90° to 0° range
+    Serial.println(pwmServo2.pwmForAngle(-45)); // Should output 225 for -45°, 97 away from -90°
+
+    pwmController.setChannelPWM(1, pwmServo2.pwmForAngle(0));
+    Serial.println(pwmController.getChannelPWM(1)); // Should output 324 for 0°
+
+    // Showing more resolution in the 0° to +90° range
+    Serial.println(pwmServo2.pwmForAngle(45));  // Should output 424 for +45°, 102 away from +90°
+
+    pwmController.setChannelPWM(1, pwmServo2.pwmForAngle(90));
+    Serial.println(pwmController.getChannelPWM(1)); // Should output 526 for +90°
 }
 
 void loop() {
-if (Serial.available()) {
-   
-    String ist = Serial.readStringUntil('\n');
+  int a = Serial.parseInt(); //시리얼 통신으로 값을 받아옴
+  
+  if (Serial.available()) {
     
-    int comma = ist.indexOf(','); //콤마(,)를 찾아 번호를 매긴다
-    int len = ist.length(); //문자의길이를 측정한다
+    int ra = constrain(map(a, 0, 180, 150, 600), 150, 600); //받은 값의 범위 0~180을 펄스길이150~600으로 매핑해주고, ra의 최소,최대를 150,600을 넘지 않게 해준다.
 
-    int x = ist.substring(0,comma).toInt(); //첫번째문자부터 콤마전까지의 수를 정수로 변환
-    int y = ist.substring(comma+1,len).toInt(); //콤마이후의 수를 정수로 변환
-
-    int rx = constrain(map(x,0,180,150,600),150,600); //입력받은 x값을 매핑, contrain으로 범위를 한정
-    int ry = constrain(map(y,0,180,150,600),150,600); //위와같음
-
-    pwm.setPWM(0,0,rx); //pca9685의 0번포트에 연결된 서보를 rx만큼 회전
-    pwm.setPWM(1,0,ry); //pca9685의 1번에 연결된 서보를 ry만큼 회전
+    pwm.setPWM(0,0,ra); //pca9685모듈의 0번 포트에 연결된 서보를 ra만큼 회전
     
     Serial.print('(');
-    Serial.print(x);
+    Serial.print(a);
     Serial.print(',');
-    Serial.print(y);
-    Serial.print(')');
-    Serial.print('-');
-    Serial.print('>');
-    Serial.print('(');
-    Serial.print(rx);
-    Serial.print(',');
-    Serial.print(ry);
+    Serial.print(ra);
     Serial.println(')');
-    
     delay(10);
   }
-
-
-
-    
-  }
+}
