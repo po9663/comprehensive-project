@@ -1,0 +1,86 @@
+solid 112box
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 19.999999999999996 0.0 9.999999999999998
+    vertex 0.0 9.999999999999998 9.999999999999998
+    vertex 0.0 0.0 9.999999999999998
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 0.0 9.999999999999998 9.999999999999998
+    vertex 19.999999999999996 0.0 9.999999999999998
+    vertex 19.999999999999996 9.999999999999998 9.999999999999998
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 9.999999999999998 9.999999999999998
+    vertex 0.0 0.0 0.0
+    vertex 0.0 0.0 9.999999999999998
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 0.0 9.999999999999998 9.999999999999998
+    vertex 0.0 9.999999999999998 0.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 0.0 9.999999999999998 9.999999999999998
+    vertex 19.999999999999996 9.999999999999998 0.0
+    vertex 0.0 9.999999999999998 0.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 19.999999999999996 9.999999999999998 0.0
+    vertex 0.0 9.999999999999998 9.999999999999998
+    vertex 19.999999999999996 9.999999999999998 9.999999999999998
+  endloop
+endfacet
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 19.999999999999996 9.999999999999998 0.0
+    vertex 0.0 0.0 0.0
+    vertex 0.0 9.999999999999998 0.0
+  endloop
+endfacet
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 19.999999999999996 9.999999999999998 0.0
+    vertex 19.999999999999996 0.0 0.0
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 19.999999999999996 9.999999999999998 0.0
+    vertex 19.999999999999996 0.0 9.999999999999998
+    vertex 19.999999999999996 0.0 0.0
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 19.999999999999996 0.0 9.999999999999998
+    vertex 19.999999999999996 9.999999999999998 0.0
+    vertex 19.999999999999996 9.999999999999998 9.999999999999998
+  endloop
+endfacet
+facet normal -0.0 -1.0 -0.0
+  outer loop
+    vertex 19.999999999999996 0.0 9.999999999999998
+    vertex 0.0 0.0 0.0
+    vertex 19.999999999999996 0.0 0.0
+  endloop
+endfacet
+facet normal -0.0 -1.0 -0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 19.999999999999996 0.0 9.999999999999998
+    vertex 0.0 0.0 9.999999999999998
+  endloop
+endfacet
+endsolid 112box
