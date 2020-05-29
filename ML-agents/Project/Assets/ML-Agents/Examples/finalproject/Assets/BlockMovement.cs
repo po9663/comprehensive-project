@@ -79,7 +79,7 @@ public class BlockMovement : Agent {
         CreateBox();
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
         {
-            Debug.Log("Start here");
+            //Debug.Log("Start here");
             mr.material = MATBLUE;
         }
         boxes = new ArrayList();
@@ -97,19 +97,19 @@ public class BlockMovement : Agent {
     void BlockCheck()
     {
         int count = 0;
-        currentBox = blockFactory.CurrentBox();
+        //currentBox = blockFactory.CurrentBox();
         if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
         {
             boxsize = description;
         }
-        Debug.Log("size=" + boxsize);
+        //Debug.Log("size=" + boxsize);
         //x,y,z 좌표 순서
         bool Isy = false;
         bool Isz = false;
         string [] bsize = boxsize.Split(',');
-        Debug.Log("bs0="+bsize[0]);
-        Debug.Log("bs1=" + bsize[1]);
-        Debug.Log("bs2=" + bsize[2]);
+        //Debug.Log("bs0="+bsize[0]);
+        //Debug.Log("bs1=" + bsize[1]);
+        //Debug.Log("bs2=" + bsize[2]);
         int xsize = Int32.Parse(bsize[0]);
         int ysize = Int32.Parse(bsize[1]);
         int zsize = Int32.Parse(bsize[2]);
@@ -166,7 +166,7 @@ public class BlockMovement : Agent {
                             //들어갈 수 있다.
                             string data = i + "," + j + "," + k;
                             vlist.Add(data);
-                            Debug.Log(data + "= 최종적으로 들어갈 수 있다");
+                            //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
                         }
                         else if (count ==0)
                         {
@@ -176,7 +176,7 @@ public class BlockMovement : Agent {
                         else
                         {
                             //들어갈 수 없다.
-                            Debug.Log("최종적으로 들어갈 수 없다");
+                            //Debug.Log("최종적으로 들어갈 수 없다");
                         }
                         count = 0;
                     }
@@ -188,7 +188,7 @@ public class BlockMovement : Agent {
         {
             vlist.Add("0,0,0");
         }
-        Debug.Log("Vlist 크기 : " + vlist.Count);
+        //Debug.Log("Vlist 크기 : " + vlist.Count);
     }
     public override void CollectObservations()
     {
@@ -198,13 +198,13 @@ public class BlockMovement : Agent {
         Vector3 relativePosition = activeBlock.transform.position;
 
         // 정규화된 값
-        //AddVectorObs(Mathf.Clamp(relativePosition.x / 7f, -1f, 1f));
-        //AddVectorObs(Mathf.Clamp(relativePosition.y / 7f, -1f, 1f));
-        //AddVectorObs(Mathf.Clamp(relativePosition.z / 12f, -1f, 1f));
+        AddVectorObs(Mathf.Clamp(relativePosition.x / 7f, -1f, 1f));
+        AddVectorObs(Mathf.Clamp(relativePosition.y / 7f, -1f, 1f));
+        AddVectorObs(Mathf.Clamp(relativePosition.z / 12f, -1f, 1f));
         //AddVectorObs(relativePosition.x);
         //AddVectorObs(relativePosition.y);
         //AddVectorObs(relativePosition.z);
-        AddVectorObs(relativePosition);
+        //AddVectorObs(relativePosition);
 
         for (int i=0; i<vlist.Count; i++)
         {
@@ -216,10 +216,10 @@ public class BlockMovement : Agent {
             Vector3 blockTransform = new Vector3(xp, yp, zp);
             Vector3 distanceToblock = blockTransform - relativePosition;
             //Debug.Log(distanceToblock);
-            //AddVectorObs(Mathf.Clamp(distanceToblock.x / 7f, -1f, 1f));
-            //AddVectorObs(Mathf.Clamp(distanceToblock.y / 7f, -1f, 1f));
-            //AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
-            AddVectorObs(distanceToblock);
+            AddVectorObs(Mathf.Clamp(distanceToblock.x / 7f, -1f, 1f));
+            AddVectorObs(Mathf.Clamp(distanceToblock.y / 7f, -1f, 1f));
+            AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
+            //AddVectorObs(distanceToblock);
 
         }
         
@@ -253,19 +253,23 @@ public class BlockMovement : Agent {
         {
             return new float[] { 6 };
         }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            return new float[] { 7 };
+        }
+        
         return new float[] { 0 };
+        
         
     }
     public override void AgentAction(float[] vectorAction)
     {
-        AddReward(-0.1f); //가만히 있는것 방지
+        //AddReward(-0.01f); //가만히 있는것 방지
         
         var movement = Mathf.FloorToInt(vectorAction[0]);
-       
-        var block = Mathf.FloorToInt(vectorAction[1]);
         
         if (movement == 1) {
-            AddReward(0.01f);
+            AddReward(0.1f);
             if (!isMoving && !isRotating)
             {
                 //directionX = -1; // 왼쪽 방향키
@@ -289,8 +293,8 @@ public class BlockMovement : Agent {
             }
 
         }
-        if (movement == 2) {
-            AddReward(0.01f);
+        else if (movement == 2) {
+            AddReward(0.1f);
             if (!isMoving && !isRotating)
             {
                 //directionX = 1; // 오른쪽 방향키 x축
@@ -313,8 +317,8 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        if (movement == 3) {
-            AddReward(0.01f);
+        else if (movement == 3) {
+            AddReward(0.1f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = -1; // 아래 방향키 z축
@@ -337,8 +341,8 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        if (movement == 4) {
-            AddReward(0.01f);
+        else if (movement == 4) {
+            AddReward(0.1f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = 1; // 위 방향키 z축
@@ -361,8 +365,8 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        if (movement == 5) {
-            AddReward(0.01f);
+        else if (movement == 5) {
+            AddReward(0.1f);
             if (!isMoving && !isRotating)
             {
                 //directionY = -1; // 아래 방향키 y축
@@ -385,8 +389,8 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        if (movement == 6) {
-            AddReward(0.01f);
+        else if (movement == 6) {
+            AddReward(0.1f);
             if (!isMoving && !isRotating)
             {
                 //directionY = 1; // 위 방향키 y축
@@ -409,56 +413,55 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        if (block == 1)
+        else if (movement == 7)
         {
-            isBlocked = true;
-            Debug.Log("This-space-");
-            cnt++;
-            rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
-            rigidbody.constraints = RigidbodyConstraints.None;
-
-
-            rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
-            activeBlock.transform.position = new Vector3(
-                       (int)Mathf.Round(activeBlock.transform.position.x),
-                       (int)Mathf.Round(activeBlock.transform.position.y),
-                       (int)Mathf.Round(activeBlock.transform.position.z));
-
-            if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
+            AddReward(-0.01f);
+            Vector3 futurePos = activeBlock.transform.position;
+            Quaternion futureRot = activeBlock.transform.rotation;
+            if (!IsSetPositionBlocked(futurePos, futureRot))
             {
-                dicList = description;
+                AddReward(0.1f);
+                Debug.Log("This-space-");
+                cnt++;
+                rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
+                rigidbody.constraints = RigidbodyConstraints.None;
+
+
+                rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
+                activeBlock.transform.position = new Vector3(
+                           (int)Mathf.Round(activeBlock.transform.position.x),
+                           (int)Mathf.Round(activeBlock.transform.position.y),
+                           (int)Mathf.Round(activeBlock.transform.position.z));
+
+                if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
+                {
+                    dicList = description;
+                }
+                //Invoke("FreezeBlock", 1);
+                //Invoke("SetPositionBlocked", 1);
+
+                dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
+                        ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
+                        ((int)Mathf.Round(activeBlock.transform.position.z)) + "," +
+                        blockFactory.CurrentBox() + "," + dicList;
+
+                boxes.Add(dataSend);
+                Debug.Log("이 박스의 정보는 " + dataSend);
+                FreezeBlock();
+                SetPositionBlocked();
             }
-            //Invoke("FreezeBlock", 1);
-            //Invoke("SetPositionBlocked", 1);
-
-            dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.z)) + "," +
-                    blockFactory.CurrentBox() + "," + dicList;
-
-            boxes.Add(dataSend);
-            Debug.Log("이 박스의 정보는 " + dataSend);
-            FreezeBlock();
-            SetPositionBlocked();
         }
-        int rx = (int)activeBlock.transform.position.x;
-        //int ry = activeBlock.transform.position.x;
-        int rz = (int)activeBlock.transform.position.z;
-
+        
         
 
         if (isDead)
         {
             AddReward(-1.0f);
             Debug.Log("죽음");
+            AgentReset();
             Done();
         }
-        if (isBlocked)
-        {
-            
-            AddReward(0.1f * (float)rx * (float)rz);
-            isBlocked = false;
-        }
+        
 
     }
     
@@ -468,6 +471,7 @@ public class BlockMovement : Agent {
     {
         activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 0), Quaternion.identity);
         activeBlock.transform.parent = Boundaries.transform;
+        
     }
 
    
@@ -501,23 +505,24 @@ public class BlockMovement : Agent {
                 //Debug.Log ("Future Pos: " + futurePos);
                 try
                 {
-                    if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0))
+                    if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)||((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)
+                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 4) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 4))
                     {
                         return true;
                     }
-                    else if (blocked[
+                    /*else if (blocked[
                             (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
                             (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)),
                             (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
                     {
 
                         return true;
-                    }
+                    }*/
 
                 }
                 catch
                 {
-                    SceneManager.LoadScene("Main");
+                    //SceneManager.LoadScene("Main");
                 }
 
 
@@ -532,7 +537,50 @@ public class BlockMovement : Agent {
 			return true;
 		return false;*/
 	}
-    
+    private bool IsSetPositionBlocked(Vector3 futurePos, Quaternion futureRot)
+    {
+        foreach (Transform cube in activeBlock.transform.GetComponentsInChildren<Transform>())
+        {
+            if (cube.childCount == 0)
+            {
+
+                //Debug.Log ("Cube Pos: " + cube.position);
+                //Debug.Log ("Future Pos: " + futurePos);
+                try
+                {
+
+                    if (blocked[
+                            (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
+                            (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)),
+                            (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
+                    {
+
+                        return true;
+                    }
+                    else if(!(((int)Mathf.Round((cube.position.y - activeBlock.transform.position.y)))>1) && !blocked[
+                            (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
+                            (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y))-1,
+                            (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
+                    {
+                        return true;
+                    }
+
+                }
+                catch
+                {
+                    //SceneManager.LoadScene("Main");
+                }
+
+
+
+
+            }
+        }
+        return false;
+
+    }
+
+
     private void SetPositionBlocked() // uses activeBlock
 	{
         
@@ -552,7 +600,7 @@ public class BlockMovement : Agent {
             }
             catch
             {
-                SceneManager.LoadScene("Main");
+                //SceneManager.LoadScene("Main");
             }
         }
         CreateBox();

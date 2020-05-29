@@ -9,6 +9,7 @@ public class BlockFactory {
 	//public GameObject BLOCKSQUARE;
 	GameObject[] blockTypes;
 	Material[] materialTypes;
+    
     public string box = "";
     public BlockFactory()
     {
@@ -34,11 +35,12 @@ public class BlockFactory {
 
 	public GameObject GetNextBlock() {	
 		int num = ((int)Mathf.Round (Random.value * 10000)) % 7;
+        num = 0;
 		GameObject block = blockTypes[num];
-		num = ((int)Mathf.Round (Random.value * 10000)) % 3;
+        num = ((int)Mathf.Round (Random.value * 10000)) % 3;
 		foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
 		{
-			Debug.Log("BlockFactory here");
+			//Debug.Log("BlockFactory here");
 			mr.material = materialTypes[num];
 		}
         box = block.ToString().Substring(0,6);
