@@ -539,22 +539,23 @@ public class BlockMovement : Agent {
 	}
     private bool IsSetPositionBlocked(Vector3 futurePos, Quaternion futureRot)
     {
+        
         foreach (Transform cube in activeBlock.transform.GetComponentsInChildren<Transform>())
         {
             if (cube.childCount == 0)
             {
-
+                //Debug.Log(cube.gameObject.name);
                 //Debug.Log ("Cube Pos: " + cube.position);
                 //Debug.Log ("Future Pos: " + futurePos);
                 try
                 {
-
+                    
                     if (blocked[
                             (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
                             (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)),
                             (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
                     {
-
+                        
                         return true;
                     }
                     else if(!(((int)Mathf.Round((cube.position.y - activeBlock.transform.position.y)))>1) && !blocked[
@@ -562,7 +563,14 @@ public class BlockMovement : Agent {
                             (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y))-1,
                             (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
                     {
-                        return true;
+                        if (cube.gameObject.name.Equals("Cube1"))
+                        {
+                            
+                        }
+                        else
+                        {
+                            return true;
+                        }
                     }
 
                 }
@@ -577,7 +585,7 @@ public class BlockMovement : Agent {
             }
         }
         return false;
-
+        
     }
 
 
