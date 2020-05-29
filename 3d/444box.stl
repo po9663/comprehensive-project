@@ -1,0 +1,86 @@
+solid 111box
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 0.0 39.999999999999986 39.999999999999986
+    vertex 39.999999999999986 39.999999999999986 0.0
+    vertex 0.0 39.999999999999986 0.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 39.999999999999986 39.999999999999986 0.0
+    vertex 0.0 39.999999999999986 39.999999999999986
+    vertex 39.999999999999986 39.999999999999986 39.999999999999986
+  endloop
+endfacet
+facet normal -0.0 -1.0 -0.0
+  outer loop
+    vertex 39.999999999999986 0.0 39.999999999999986
+    vertex 0.0 0.0 0.0
+    vertex 39.999999999999986 0.0 0.0
+  endloop
+endfacet
+facet normal -0.0 -1.0 -0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 39.999999999999986 0.0 39.999999999999986
+    vertex 0.0 0.0 39.999999999999986
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 39.999999999999986 39.999999999999986 0.0
+    vertex 39.999999999999986 0.0 39.999999999999986
+    vertex 39.999999999999986 0.0 0.0
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 39.999999999999986 0.0 39.999999999999986
+    vertex 39.999999999999986 39.999999999999986 0.0
+    vertex 39.999999999999986 39.999999999999986 39.999999999999986
+  endloop
+endfacet
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 39.999999999999986 39.999999999999986 0.0
+    vertex 0.0 0.0 0.0
+    vertex 0.0 39.999999999999986 0.0
+  endloop
+endfacet
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 39.999999999999986 39.999999999999986 0.0
+    vertex 39.999999999999986 0.0 0.0
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 39.999999999999986 0.0 39.999999999999986
+    vertex 0.0 39.999999999999986 39.999999999999986
+    vertex 0.0 0.0 39.999999999999986
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 0.0 39.999999999999986 39.999999999999986
+    vertex 39.999999999999986 0.0 39.999999999999986
+    vertex 39.999999999999986 39.999999999999986 39.999999999999986
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 39.999999999999986 39.999999999999986
+    vertex 0.0 0.0 0.0
+    vertex 0.0 0.0 39.999999999999986
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 0.0 39.999999999999986 39.999999999999986
+    vertex 0.0 39.999999999999986 0.0
+  endloop
+endfacet
+endsolid 111box

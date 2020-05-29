@@ -1,0 +1,86 @@
+solid 밑판301505
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 200.00000000000017 199.99999999999991 0.0
+    vertex 0.0 0.0 0.0
+    vertex 0.0 199.99999999999991 0.0
+  endloop
+endfacet
+facet normal 0.0 0.0 -1.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 200.00000000000017 199.99999999999991 0.0
+    vertex 200.00000000000017 0.0 0.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 0.0 199.99999999999991 5.000000000000011
+    vertex 200.00000000000017 199.99999999999991 0.0
+    vertex 0.0 199.99999999999991 0.0
+  endloop
+endfacet
+facet normal 0.0 1.0 0.0
+  outer loop
+    vertex 200.00000000000017 199.99999999999991 0.0
+    vertex 0.0 199.99999999999991 5.000000000000011
+    vertex 200.00000000000017 199.99999999999991 5.000000000000011
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 200.00000000000017 0.0 5.000000000000011
+    vertex 0.0 199.99999999999991 5.000000000000011
+    vertex 0.0 0.0 5.000000000000011
+  endloop
+endfacet
+facet normal 0.0 0.0 1.0
+  outer loop
+    vertex 0.0 199.99999999999991 5.000000000000011
+    vertex 200.00000000000017 0.0 5.000000000000011
+    vertex 200.00000000000017 199.99999999999991 5.000000000000011
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 200.00000000000017 199.99999999999991 0.0
+    vertex 200.00000000000017 0.0 5.000000000000011
+    vertex 200.00000000000017 0.0 0.0
+  endloop
+endfacet
+facet normal 1.0 0.0 0.0
+  outer loop
+    vertex 200.00000000000017 0.0 5.000000000000011
+    vertex 200.00000000000017 199.99999999999991 0.0
+    vertex 200.00000000000017 199.99999999999991 5.000000000000011
+  endloop
+endfacet
+facet normal -0.0 -1.0 -0.0
+  outer loop
+    vertex 200.00000000000017 0.0 5.000000000000011
+    vertex 0.0 0.0 0.0
+    vertex 200.00000000000017 0.0 0.0
+  endloop
+endfacet
+facet normal -0.0 -1.0 -0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 200.00000000000017 0.0 5.000000000000011
+    vertex 0.0 0.0 5.000000000000011
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 199.99999999999991 5.000000000000011
+    vertex 0.0 0.0 0.0
+    vertex 0.0 0.0 5.000000000000011
+  endloop
+endfacet
+facet normal -1.0 0.0 0.0
+  outer loop
+    vertex 0.0 0.0 0.0
+    vertex 0.0 199.99999999999991 5.000000000000011
+    vertex 0.0 199.99999999999991 0.0
+  endloop
+endfacet
+endsolid 밑판301505
