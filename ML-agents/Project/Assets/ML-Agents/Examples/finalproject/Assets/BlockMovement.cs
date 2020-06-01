@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 using MLAgents;
 
 public class BlockMovement : Agent {
-
+    int deadcount = 0;
     public GameObject Boundaries;
 	public GameObject Block;
     public GameObject Block2;
@@ -85,18 +85,20 @@ public class BlockMovement : Agent {
         boxes = new ArrayList();
        
     }
-    
+   
     public override void AgentReset()
     {
         isDead = false;
         dicList = "";
         boxsize = "";
-        // InitializeAgent();
+        Debug.Log("주금");
+        //InitializeAgent();
     }
 
     void BlockCheck()
     {
         int count = 0;
+        
         //currentBox = blockFactory.CurrentBox();
         if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
         {
@@ -152,8 +154,26 @@ public class BlockMovement : Agent {
                                     }
                                     else
                                     {
-                                        count++;
-                                        //비어있음
+                                        if (j != 0)
+                                        {
+                                            if (b == 1)
+                                            {
+                                                    count++;
+                                            }
+                                            else
+                                            {
+                                                if (blocked[i + a, j + b - 1, k + c] == true)
+                                                {
+                                                    count++;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            count++;
+                                            //비어있음
+                                        }
+
                                     }
                                    
                                 }
@@ -163,15 +183,23 @@ public class BlockMovement : Agent {
                         }
                         if (count!=0 && count == xsize * ysize * zsize)
                         {
-                            //들어갈 수 있다.
-                            string data = i + "," + j + "," + k;
-                            vlist.Add(data);
-                            //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
-                        }
-                        else if (count ==0)
-                        {
-                            Debug.Log("게임오버");
-                            isDead = true;
+                            if (j != 0)
+                            {
+                                if (blocked[i, j - 1, k] == true)
+                                {
+                                    //들어갈 수 있다.
+                                    string data = i + "," + j + "," + k;
+                                    vlist.Add(data);
+                                    //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
+                                }
+                            }
+                            else
+                            {
+                                //들어갈 수 있다.
+                                string data = i + "," + j + "," + k;
+                                vlist.Add(data);
+                                //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
+                            }
                         }
                         else
                         {
@@ -184,11 +212,19 @@ public class BlockMovement : Agent {
             }
         }
         int num = 250 - vlist.Count;
-        for(int a=0; a<num; a++)
+        if (num == 250)
         {
-            vlist.Add("0,0,0");
+            Debug.Log("게임오버");
+            isDead = true;
         }
-        //Debug.Log("Vlist 크기 : " + vlist.Count);
+        else
+        {
+            for (int a = 0; a < num; a++)
+            {
+                vlist.Add("0,0,0");
+            }
+            //Debug.Log("Vlist 크기 : " + vlist.Count);
+        }
     }
     public override void CollectObservations()
     {
@@ -269,7 +305,7 @@ public class BlockMovement : Agent {
         var movement = Mathf.FloorToInt(vectorAction[0]);
         
         if (movement == 1) {
-            AddReward(0.1f);
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionX = -1; // 왼쪽 방향키
@@ -294,7 +330,7 @@ public class BlockMovement : Agent {
 
         }
         else if (movement == 2) {
-            AddReward(0.1f);
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionX = 1; // 오른쪽 방향키 x축
@@ -318,7 +354,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 3) {
-            AddReward(0.1f);
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = -1; // 아래 방향키 z축
@@ -342,7 +378,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 4) {
-            AddReward(0.1f);
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = 1; // 위 방향키 z축
@@ -366,7 +402,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 5) {
-            AddReward(0.1f);
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionY = -1; // 아래 방향키 y축
@@ -390,7 +426,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 6) {
-            AddReward(0.1f);
+            AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionY = 1; // 위 방향키 y축
@@ -449,17 +485,17 @@ public class BlockMovement : Agent {
                 Debug.Log("이 박스의 정보는 " + dataSend);
                 FreezeBlock();
                 SetPositionBlocked();
+                deadcount++;
             }
         }
         
         
 
-        if (isDead)
+        if (isDead||deadcount==10)
         {
             AddReward(-1.0f);
             Debug.Log("죽음");
             AgentReset();
-            Done();
         }
         
 
@@ -467,7 +503,7 @@ public class BlockMovement : Agent {
     
 
 
-            private void CreateBox()
+    private void CreateBox()
     {
         activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 0), Quaternion.identity);
         activeBlock.transform.parent = Boundaries.transform;

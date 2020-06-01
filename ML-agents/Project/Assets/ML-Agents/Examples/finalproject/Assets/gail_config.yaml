@@ -139,7 +139,7 @@ Block:
     max_steps: 1.0e7
     num_epoch: 3
     behavioral_cloning:
-        demo_path: demos/record0_1.demo
+        demo_path: demos/record0_3.demo
         strength: 0.5
         steps: 150000
     reward_signals:
@@ -154,4 +154,4 @@ Block:
             strength: 0.01
             gamma: 0.99
             encoding_size: 128
-            demo_path: demos/record0_1.demo
+            demo_path: demos/record0_3.demo

@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 3533d18cfac828c409cf4a2478d74bad
+ScriptedImporter:
+  fileIDToRecycleName:
+    11400002: Assets/ML-Agents/Examples/finalproject/Assets/demos/record0_3.demo
+  externalObjects: {}
+  userData: ' (MLAgents.Demonstration)'
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 7bd65ce151aaa4a41a45312543c56be1, type: 3}

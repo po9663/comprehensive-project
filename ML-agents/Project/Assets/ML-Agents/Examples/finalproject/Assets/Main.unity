@@ -519,7 +519,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 1
+  maxStep: 1000
   Boundaries: {fileID: 1381682219}
   Block: {fileID: 164086, guid: 70de72ebec1aa6845892adc1d5d41f07, type: 3}
   Block2: {fileID: 164086, guid: d3f78473e05b3e343b8c9c48026ffca2, type: 3}
@@ -555,7 +555,7 @@ MonoBehaviour:
     vectorActionSpaceType: 0
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: My Behavior
   m_TeamID: 0
   m_UseChildSensors: 1
