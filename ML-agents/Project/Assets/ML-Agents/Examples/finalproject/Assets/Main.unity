@@ -165,6 +165,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   maxStep: 10
   Boundaries: {fileID: 55423153}
+  Blocks: {fileID: 0}
   Block: {fileID: 164086, guid: 70de72ebec1aa6845892adc1d5d41f07, type: 3}
   Block2: {fileID: 164086, guid: d3f78473e05b3e343b8c9c48026ffca2, type: 3}
   Block3: {fileID: 164086, guid: 2969595add980b24ca346b8d1a737d1b, type: 3}
@@ -242,8 +243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50f710d360a49461cad67ff5e6bcefe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  record: 1
-  demonstrationName: record_0
+  record: 0
+  demonstrationName: 
 --- !u!1 &179889948
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,6 +327,36 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &378693154
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 378693155}
+  m_Layer: 0
+  m_Name: Blocks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &378693155
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378693154}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1053068847}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &541841907
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,6 +471,7 @@ Transform:
   m_Children:
   - {fileID: 747125283}
   - {fileID: 1381682220}
+  - {fileID: 378693155}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -521,6 +553,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   maxStep: 1000
   Boundaries: {fileID: 1381682219}
+  Blocks: {fileID: 378693154}
   Block: {fileID: 164086, guid: 70de72ebec1aa6845892adc1d5d41f07, type: 3}
   Block2: {fileID: 164086, guid: d3f78473e05b3e343b8c9c48026ffca2, type: 3}
   Block3: {fileID: 164086, guid: 2969595add980b24ca346b8d1a737d1b, type: 3}
@@ -548,7 +581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 753
+    vectorObservationSize: 754
     numStackedVectorObservations: 1
     vectorActionSize: 08000000
     vectorActionDescriptions: []
@@ -678,6 +711,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   maxStep: 0
   Boundaries: {fileID: 55423153}
+  Blocks: {fileID: 0}
   Block: {fileID: 164086, guid: 70de72ebec1aa6845892adc1d5d41f07, type: 3}
   Block2: {fileID: 164086, guid: d3f78473e05b3e343b8c9c48026ffca2, type: 3}
   Block3: {fileID: 164086, guid: 2969595add980b24ca346b8d1a737d1b, type: 3}

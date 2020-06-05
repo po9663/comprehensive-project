@@ -14,6 +14,8 @@ using MLAgents;
 public class BlockMovement : Agent {
     int deadcount = 0;
     public GameObject Boundaries;
+    public GameObject Blocks;
+    GameObject CloneBlocks;
 	public GameObject Block;
     public GameObject Block2;
     public GameObject Block3;
@@ -27,7 +29,7 @@ public class BlockMovement : Agent {
     bool isBlocked = false;
     private bool bonus = false;
     private bool isDead = false;
-
+    int level = 1;
     Rigidbody rigidbody;
     Dictionary<string, string> dictionary;
     public string boxsize = "";
@@ -76,6 +78,8 @@ public class BlockMovement : Agent {
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
+        CloneBlocks=(GameObject)GameObject.Instantiate(Blocks, new Vector3(0, 0, 0), Quaternion.identity);
+        CloneBlocks.transform.parent = Boundaries.transform;
         CreateBox();
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
         {
@@ -88,15 +92,29 @@ public class BlockMovement : Agent {
    
     public override void AgentReset()
     {
-        isDead = false;
-        dicList = "";
-        boxsize = "";
-        Debug.Log("주금");
-        //InitializeAgent();
+        if (isDead||deadcount==15)
+        {
+            Destroy(CloneBlocks);
+            isDead = false;
+            deadcount = 0;
+            initGrid();
+            CloneBlocks = (GameObject)GameObject.Instantiate(Blocks, new Vector3(0, 0, 0), Quaternion.identity);
+            CloneBlocks.transform.parent = Boundaries.transform;
+            CreateBox();
+            foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
+            {
+                //Debug.Log("Start here");
+                mr.material = MATBLUE;
+            }
+            boxes = new ArrayList();
+            Debug.Log("AgentReset");
+            //InitializeAgent();
+        }
     }
 
     void BlockCheck()
     {
+        //vlist.Dispose();
         int count = 0;
         
         //currentBox = blockFactory.CurrentBox();
@@ -232,7 +250,7 @@ public class BlockMovement : Agent {
         BlockCheck();
 
         Vector3 relativePosition = activeBlock.transform.position;
-
+        AddVectorObs(level);
         // 정규화된 값
         AddVectorObs(Mathf.Clamp(relativePosition.x / 7f, -1f, 1f));
         AddVectorObs(Mathf.Clamp(relativePosition.y / 7f, -1f, 1f));
@@ -300,12 +318,12 @@ public class BlockMovement : Agent {
     }
     public override void AgentAction(float[] vectorAction)
     {
-        //AddReward(-0.01f); //가만히 있는것 방지
+        AddReward(-0.01f); //가만히 있는것 방지
         
         var movement = Mathf.FloorToInt(vectorAction[0]);
         
         if (movement == 1) {
-            AddReward(0.01f);
+            //AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionX = -1; // 왼쪽 방향키
@@ -330,7 +348,7 @@ public class BlockMovement : Agent {
 
         }
         else if (movement == 2) {
-            AddReward(0.01f);
+            //AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionX = 1; // 오른쪽 방향키 x축
@@ -354,7 +372,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 3) {
-            AddReward(0.01f);
+            //AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = -1; // 아래 방향키 z축
@@ -378,7 +396,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 4) {
-            AddReward(0.01f);
+            //AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionZ = 1; // 위 방향키 z축
@@ -402,7 +420,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 5) {
-            AddReward(0.01f);
+            //AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionY = -1; // 아래 방향키 y축
@@ -426,7 +444,7 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 6) {
-            AddReward(0.01f);
+            //AddReward(0.01f);
             if (!isMoving && !isRotating)
             {
                 //directionY = 1; // 위 방향키 y축
@@ -457,6 +475,7 @@ public class BlockMovement : Agent {
             if (!IsSetPositionBlocked(futurePos, futureRot))
             {
                 AddReward(0.1f);
+                int rx = (int)Mathf.Round(activeBlock.transform.position.x);
                 Debug.Log("This-space-");
                 cnt++;
                 rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
@@ -486,12 +505,39 @@ public class BlockMovement : Agent {
                 FreezeBlock();
                 SetPositionBlocked();
                 deadcount++;
+                AddReward(rx*0.1f);
             }
         }
-        
-        
+        switch (level)
+        {
+            case 1:
+                int rcnt = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    for(int j = 9; j>6; j--)
+                    {
+                        if (blocked[i, 0, j])
+                        {
+                            rcnt++;
+                            AddReward(j * 0.5f);
+                        }
+                    }
+                    
+                }
+                if(rcnt==50)
+                {
+                    AddReward(1f);
+                    level++;
+                }
+                
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
 
-        if (isDead||deadcount==10)
+        if (isDead||deadcount==15)
         {
             AddReward(-1.0f);
             Debug.Log("죽음");
@@ -506,7 +552,7 @@ public class BlockMovement : Agent {
     private void CreateBox()
     {
         activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 0), Quaternion.identity);
-        activeBlock.transform.parent = Boundaries.transform;
+        activeBlock.transform.parent = CloneBlocks.transform;
         
     }
 
@@ -545,6 +591,10 @@ public class BlockMovement : Agent {
                         || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 4) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 4))
                     {
                         return true;
+                    }
+                    if (((int)(Mathf.Round(activeBlock.transform.position.z))) > 8)
+                    {
+                        activeBlock.transform.position = new Vector3(activeBlock.transform.position.x, activeBlock.transform.position.y, 8);
                     }
                     /*else if (blocked[
                             (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
