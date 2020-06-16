@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 using MLAgents;
 
 public class BlockMovement : Agent {
+    public Transform pivottransform;
     int deadcount = 0;
     public GameObject Boundaries;
     public GameObject Blocks;
@@ -26,10 +27,15 @@ public class BlockMovement : Agent {
 	public Material MATRED;
 	public Material MATBLUE;
 	public Material MATGREEN;
+    int maxy = 0;
+    int exz = 9;
+    bool isSet = false;
     bool isBlocked = false;
     private bool bonus = false;
     private bool isDead = false;
     int level = 1;
+    int levelcnt = 0;
+    int levelz = 0;
     Rigidbody rigidbody;
     Dictionary<string, string> dictionary;
     public string boxsize = "";
@@ -51,7 +57,7 @@ public class BlockMovement : Agent {
     float tElapsed;
     public string currentBox = ""; // 현재박스의 이름
     public string dataSend = ""; //데이터 전송
-    bool[,,] blocked = new bool[7, 7, 12]; //블록체크
+    bool[,,] blocked = new bool[11, 11, 12]; //블록체크
     // Use this for initialization
     public BlockMovement()
     {
@@ -72,13 +78,14 @@ public class BlockMovement : Agent {
             {"Block7","2,2,2"}
         };
         blockFactory = new BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7, MATRED, MATBLUE, MATGREEN);
-        
+        levelz = 5;
+        levelcnt = 45;
         //grid생성
         initGrid();
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
-        CloneBlocks=(GameObject)GameObject.Instantiate(Blocks, new Vector3(0, 0, 0), Quaternion.identity);
+        CloneBlocks=(GameObject)GameObject.Instantiate(Blocks, pivottransform.position, Quaternion.identity);
         CloneBlocks.transform.parent = Boundaries.transform;
         CreateBox();
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
@@ -94,11 +101,18 @@ public class BlockMovement : Agent {
     {
         if (isDead||deadcount==15)
         {
+
+            maxy = 0;
+            exz = 9;
+            levelz = 5;
+            levelcnt = 45;
+            cnt = 0;
+            level = 1;
             Destroy(CloneBlocks);
             isDead = false;
             deadcount = 0;
             initGrid();
-            CloneBlocks = (GameObject)GameObject.Instantiate(Blocks, new Vector3(0, 0, 0), Quaternion.identity);
+            CloneBlocks = (GameObject)GameObject.Instantiate(Blocks, pivottransform.position, Quaternion.identity);
             CloneBlocks.transform.parent = Boundaries.transform;
             CreateBox();
             foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
@@ -142,10 +156,10 @@ public class BlockMovement : Agent {
         {
             Isz = true;
         }
-        for (int i=0; i<5; i++)
+        for (int i=0; i<9; i++)
         {
-            //좌표수 만큼 반복 7x7x12
-            for(int j=0; j<5; j++)
+            //좌표수 만큼 반복 9x9x10
+            for(int j=0; j<9; j++)
             {
                 for(int k=0; k<10; k++)
                 {
@@ -208,6 +222,10 @@ public class BlockMovement : Agent {
                                     //들어갈 수 있다.
                                     string data = i + "," + j + "," + k;
                                     vlist.Add(data);
+                                    if (j > maxy)
+                                    {
+                                        maxy = j+1;
+                                    }
                                     //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
                                 }
                             }
@@ -216,6 +234,10 @@ public class BlockMovement : Agent {
                                 //들어갈 수 있다.
                                 string data = i + "," + j + "," + k;
                                 vlist.Add(data);
+                                if (j > maxy)
+                                {
+                                    maxy = j+1;
+                                }
                                 //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
                             }
                         }
@@ -229,8 +251,8 @@ public class BlockMovement : Agent {
                 }
             }
         }
-        int num = 250 - vlist.Count;
-        if (num == 250)
+        /*int num = 810 - vlist.Count;
+        if (num == 810)
         {
             Debug.Log("게임오버");
             isDead = true;
@@ -239,10 +261,10 @@ public class BlockMovement : Agent {
         {
             for (int a = 0; a < num; a++)
             {
-                vlist.Add("0,0,0");
+                vlist.Add("-1,-1,-1");
             }
             //Debug.Log("Vlist 크기 : " + vlist.Count);
-        }
+        }*/
     }
     public override void CollectObservations()
     {
@@ -250,16 +272,17 @@ public class BlockMovement : Agent {
         BlockCheck();
 
         Vector3 relativePosition = activeBlock.transform.position;
-        AddVectorObs(level);
-        // 정규화된 값
-        AddVectorObs(Mathf.Clamp(relativePosition.x / 7f, -1f, 1f));
-        AddVectorObs(Mathf.Clamp(relativePosition.y / 7f, -1f, 1f));
-        AddVectorObs(Mathf.Clamp(relativePosition.z / 12f, -1f, 1f));
+        //AddVectorObs(level);
+        //AddVectorObs(exz);
+        
+        //AddVectorObs(Mathf.Clamp(relativePosition.x / 11f, -1f, 1f));
+        //AddVectorObs(Mathf.Clamp(relativePosition.y / 11f, -1f, 1f));
+        //AddVectorObs(Mathf.Clamp(relativePosition.z / 12f, -1f, 1f));
         //AddVectorObs(relativePosition.x);
         //AddVectorObs(relativePosition.y);
         //AddVectorObs(relativePosition.z);
-        //AddVectorObs(relativePosition);
-
+        AddVectorObs(relativePosition);
+        int ccnt = 0;
         for (int i=0; i<vlist.Count; i++)
         {
             string temp = vlist[i].ToString();
@@ -267,14 +290,21 @@ public class BlockMovement : Agent {
             int xp = Int32.Parse(bp[0]);
             int yp = Int32.Parse(bp[1]);
             int zp = Int32.Parse(bp[2]);
+            
             Vector3 blockTransform = new Vector3(xp, yp, zp);
-            Vector3 distanceToblock = blockTransform - relativePosition;
+            Vector3 distanceToblock = relativePosition-blockTransform;
             //Debug.Log(distanceToblock);
-            AddVectorObs(Mathf.Clamp(distanceToblock.x / 7f, -1f, 1f));
-            AddVectorObs(Mathf.Clamp(distanceToblock.y / 7f, -1f, 1f));
-            AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
-            //AddVectorObs(distanceToblock);
+            //AddVectorObs(Mathf.Clamp(distanceToblock.x / 11f, -1f, 1f));
+            //AddVectorObs(Mathf.Clamp(distanceToblock.y / 11f, -1f, 1f));
+            //AddVectorObs(Mathf.Clamp(distanceToblock.z / 12f, -1f, 1f));
+            //AddVectorObs(blockTransform);
+            AddVectorObs(distanceToblock);
+            //Debug.Log(distanceToblock);
 
+        }
+        for(int j=0; j<(810-vlist.Count)*3; j++)
+        {
+            AddVectorObs(0);
         }
         
 
@@ -318,7 +348,7 @@ public class BlockMovement : Agent {
     }
     public override void AgentAction(float[] vectorAction)
     {
-        AddReward(-0.01f); //가만히 있는것 방지
+        //AddReward(-0.00001f);
         
         var movement = Mathf.FloorToInt(vectorAction[0]);
         
@@ -327,12 +357,13 @@ public class BlockMovement : Agent {
             if (!isMoving && !isRotating)
             {
                 //directionX = -1; // 왼쪽 방향키
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(-1f, 0, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(-1, 0, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
                 }
+                
             }
             else
             {
@@ -352,12 +383,13 @@ public class BlockMovement : Agent {
             if (!isMoving && !isRotating)
             {
                 //directionX = 1; // 오른쪽 방향키 x축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(1f, 0, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(1, 0, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
                 }
+                
             }
             else
             {
@@ -376,12 +408,13 @@ public class BlockMovement : Agent {
             if (!isMoving && !isRotating)
             {
                 //directionZ = -1; // 아래 방향키 z축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1f);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
                 }
+                
             }
             else
             {
@@ -400,12 +433,13 @@ public class BlockMovement : Agent {
             if (!isMoving && !isRotating)
             {
                 //directionZ = 1; // 위 방향키 z축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1f);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
                 }
+                
             }
             else
             {
@@ -424,12 +458,13 @@ public class BlockMovement : Agent {
             if (!isMoving && !isRotating)
             {
                 //directionY = -1; // 아래 방향키 y축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, -1f, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, -1, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
                 }
+                
             }
             else
             {
@@ -444,16 +479,18 @@ public class BlockMovement : Agent {
             }
         }
         else if (movement == 6) {
-            //AddReward(0.01f);
+            //AddReward(-0.001f);
             if (!isMoving && !isRotating)
             {
                 //directionY = 1; // 위 방향키 y축
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 1f, 0);
+                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 1, 0);
                 Quaternion futureRot = activeBlock.transform.rotation;
                 if (!IsPositionBlocked(futurePos, futureRot))
                 {
                     SmoothMove(activeBlock.transform.position, futurePos);
                 }
+                
+
             }
             else
             {
@@ -469,13 +506,12 @@ public class BlockMovement : Agent {
         }
         else if (movement == 7)
         {
-            AddReward(-0.01f);
             Vector3 futurePos = activeBlock.transform.position;
             Quaternion futureRot = activeBlock.transform.rotation;
             if (!IsSetPositionBlocked(futurePos, futureRot))
             {
-                AddReward(0.1f);
-                int rx = (int)Mathf.Round(activeBlock.transform.position.x);
+                AddReward(0.05f);
+                
                 Debug.Log("This-space-");
                 cnt++;
                 rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
@@ -494,64 +530,136 @@ public class BlockMovement : Agent {
                 }
                 //Invoke("FreezeBlock", 1);
                 //Invoke("SetPositionBlocked", 1);
-
+                int rz = (int)Mathf.Round(activeBlock.transform.position.z);
                 dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
                         ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
                         ((int)Mathf.Round(activeBlock.transform.position.z)) + "," +
                         blockFactory.CurrentBox() + "," + dicList;
-
+                /*
+                if (rz > exz-1)
+                {
+                     AddReward(0.1f);
+                }
+                else
+                {
+                    AddReward(-0.1f);
+                }
+                */
+                
+                
                 boxes.Add(dataSend);
                 Debug.Log("이 박스의 정보는 " + dataSend);
                 FreezeBlock();
                 SetPositionBlocked();
+                isSet = true;
                 deadcount++;
-                AddReward(rx*0.1f);
+                int exzcnt = 0;
+                for(int i = 0; i< 9; i++)
+                {
+                    if (blocked[i, 0, exz])
+                    {
+                        exzcnt++;
+                    }
+                }
+                if (exzcnt >= 7)
+                {
+                    exz--;
+                    AddReward(0.1f);
+                }
+                //AddReward(rz*0.1f);
+                switch (level)
+                {
+                    case 1:
+                        int rcnt = 0;
+                        for (int i = 0; i < 9; i++)
+                        {
+                            for (int j = levelz; j < 10; j++)
+                            {
+                                if (blocked[i, 0, j])
+                                {
+                                    rcnt++;
+                                    //AddReward(j * 0.2f);
+                                }
+                            }
+
+                        }
+                        if (rcnt == levelcnt)//36
+                        {
+                            AddReward(0.1f);
+                            level++;
+                            levelz--;
+                        }
+
+                        break;
+                    case 2:
+                        rcnt = 0;
+                        for (int i = 0; i < 9; i++)
+                        {
+                            for (int j = levelz; j < 10; j++)
+                            {
+                                if (blocked[i, 1, j])
+                                {
+                                    rcnt++;
+                                    //AddReward(j * 0.2f);
+                                }
+                            }
+
+                        }
+                        if (rcnt == levelcnt-4)//34
+                        {
+                            AddReward(0.1f);
+                            level++;
+                        }
+                        break;
+                    case 3:
+                        rcnt = 0;
+                        for (int i = 0; i < 9; i++)
+                        {
+                            for (int j = levelz; j < 10; j++)
+                            {
+                                if (blocked[i, 2, j])
+                                {
+                                    rcnt++;
+                                    //AddReward(j * 0.2f);
+                                }
+                            }
+
+                        }
+                        if (rcnt == levelcnt-4)//32
+                        {
+                            AddReward(0.1f);
+                            level++;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                AddReward(-0.05f);
+                //activeBlock.transform.position = new Vector3(0, 0, 0);
             }
         }
-        switch (level)
+        
+        if (isSet)
         {
-            case 1:
-                int rcnt = 0;
-                for (int i = 0; i < 5; i++)
-                {
-                    for(int j = 9; j>6; j--)
-                    {
-                        if (blocked[i, 0, j])
-                        {
-                            rcnt++;
-                            AddReward(j * 0.5f);
-                        }
-                    }
-                    
-                }
-                if(rcnt==50)
-                {
-                    AddReward(1f);
-                    level++;
-                }
-                
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
+            CreateBox();
+            isSet = false;
         }
-
         if (isDead||deadcount==15)
         {
-            AddReward(-1.0f);
-            Debug.Log("죽음");
-            AgentReset();
+            //AddReward(1f);
+            Debug.Log(boxes);
+            Done();
         }
-        
+        Monitor.Log(name, GetCumulativeReward(), transform);
 
     }
-    
 
 
-    private void CreateBox()
+
+private void CreateBox()
     {
-        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 0), Quaternion.identity);
+        activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), pivottransform.position, Quaternion.identity);
         activeBlock.transform.parent = CloneBlocks.transform;
         
     }
@@ -560,13 +668,13 @@ public class BlockMovement : Agent {
 
     
     private void initGrid() {
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 7; j++) {
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
 				for (int k = 0; k < 12; k++) {
                     
 					blocked[i,j,k] = false;
                     
-					if ((i >= 5) || (j >= 5) || (k >= 10))
+					if ((i >= 9) || (j >= 9) || (k >= 10))
                     {
 						blocked[i,j,k] = true;
                     }
@@ -578,7 +686,8 @@ public class BlockMovement : Agent {
     
 
 	private bool IsPositionBlocked(Vector3 futurePos, Quaternion futureRot) {
-		foreach (Transform cube in activeBlock.transform.GetComponentsInChildren<Transform>())
+        
+        foreach (Transform cube in activeBlock.transform.GetComponentsInChildren<Transform>())
 		{
 			if (cube.childCount == 0)
 			{
@@ -588,14 +697,22 @@ public class BlockMovement : Agent {
                 try
                 {
                     if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)||((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)
-                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 4) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 4))
+                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 8) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9)  || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 8))
                     {
                         return true;
                     }
-                    if (((int)(Mathf.Round(activeBlock.transform.position.z))) > 8)
+                    if (((int)(Mathf.Round(cube.transform.position.z))) > 9.5)
                     {
                         activeBlock.transform.position = new Vector3(activeBlock.transform.position.x, activeBlock.transform.position.y, 8);
                     }
+                    /*if (((int)(Mathf.Round(activeBlock.transform.position.x))) > 7)
+                    {
+                        activeBlock.transform.position = new Vector3(activeBlock.transform.position.x, 7, activeBlock.transform.position.z);
+                    }
+                    if (((int)(Mathf.Round(activeBlock.transform.position.x))) > 7)
+                    {
+                        activeBlock.transform.position = new Vector3(7, activeBlock.transform.position.y, activeBlock.transform.position.z );
+                    }*/
                     /*else if (blocked[
                             (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
                             (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)),
@@ -608,6 +725,7 @@ public class BlockMovement : Agent {
                 }
                 catch
                 {
+                    //activeBlock.transform.position = new Vector3(0, 0, 0);
                     //SceneManager.LoadScene("Main");
                 }
 
@@ -697,7 +815,7 @@ public class BlockMovement : Agent {
                 //SceneManager.LoadScene("Main");
             }
         }
-        CreateBox();
+        //CreateBox();
     }
     private void FreezeBlock()
     {

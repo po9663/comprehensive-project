@@ -34,8 +34,8 @@ public class BlockFactory {
 	}
 
 	public GameObject GetNextBlock() {	
-		int num = ((int)Mathf.Round (Random.value * 10000)) % 7;
-        //num = 2;
+		int num = ((int)Mathf.Round (Random.value * 10000)) % 6;
+        //num = 0;
 		GameObject block = blockTypes[num];
         num = ((int)Mathf.Round (Random.value * 10000)) % 3;
 		foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
