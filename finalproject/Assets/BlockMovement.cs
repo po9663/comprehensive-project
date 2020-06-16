@@ -1,17 +1,11 @@
-﻿/*
-
-
-
-
-*/
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.SceneManagement;
 
 public class BlockMovement : MonoBehaviour {
-
+    
 	public GameObject Block;
     public GameObject Block2;
     public GameObject Block3;
@@ -30,24 +24,11 @@ public class BlockMovement : MonoBehaviour {
     public string boxsize = "";
     List<string> vlist;
     List<string> boxes;
-    List<string> li;
-    List<string> li1;
-    List<string> li2;
-    List<string> li3;
-    bool isli1 = false;
-    bool isli2 = false;
-    bool isli3 = false;
     BlockFactory blockFactory;
 	GameObject activeBlock;
 	float moveSpeed = 10f;
     //float defaultFallSpeed = 1f;
     //float fallSpeed = 1f;
-    bool isBeat = false;
-    bool isChk = true;
-    bool isMinus = false;
-    bool ischchk = false;
-    string so = "";
-    bool isReCount = true;
     int cnt = 0;
 	//float zNextCheckPoint = 1f;
     //bool isFalling = true;
@@ -60,48 +41,20 @@ public class BlockMovement : MonoBehaviour {
     public string currentBox = ""; // 현재박스의 이름
     public string dataSend = ""; //데이터 전송
     bool[,,] blocked = new bool[7, 7, 12];
-    private float timeLeft = 0.5f;
-    private float nextTime = 0.0f;
-    int maxXXX = 0;
-    int maxYYY = 0;
-    int maxZZZ = 0;
-    int positionZ = 9;
-    int minus = 0;
-    int maxX = 0;
-    int maxY = 0;
-    int maxZ = 9;
-    int chX = 0;
-    int chY = 0;
-    int chY2L = 0;
-    int chY3L = 0;
-    int chZ = 0;
-    int pullX = 0;
-    int pullY = 0;
-    int pullZ = 0;
-    float movingZ;
-    int reY = 0;
-    int line1 = 0;
-    int line2 = 0;
-    int line3 = 0;
-    int block = 0;
-    int block2 = 0;
-    int block3 = 0;
-    int block4 = 0;
-    int block5 = 0;
-    int block6 = 0;
-    int block7 = 0;
+
+    bool isCreate = false;
     // Use this for initialization
     public BlockMovement()
     {
 
     }
 	void Start () {
+        //sp.Open();
+        //sp.ReadTimeout = 1;
+
+
         // BlockFactory 클래스 객체생성
         boxes = new List<string>();
-        li = new List<string>();
-        li1 = new List<string>();
-        li2 = new List<string>();
-        li3 = new List<string>();
         dictionary = new Dictionary<string, string>()
         {
             {"Block ","1,1,1"},
@@ -126,40 +79,556 @@ public class BlockMovement : MonoBehaviour {
 			mr.material = MATBLUE;
 		}
         
-        BlockCheck();
         
     }
+
+    bool isYCheck = false;
+    bool isCr = true;
+    private void CarryBox()
+    {
+        for (int y = 0; y <= 4; y++)
+        {
+            for (int z = 9; z >= 0; z--)
+            {
+                for (int x = 0; x <= 4; x++)
+                {
+                    if(cnt != 0)
+                    { 
+                        for(int a = 0; a < vlist.Count; a++)
+                        {
+                            string[] strs = vlist[a].Split(',');
+                            if(Int32.Parse(strs[1]) >= 1)
+                            {
+                                isYCheck = true;
+
+                            }
+                        }
+                    }
+                    if(isYCheck)
+                    {
+                        for(int ay = 1; ay <= 3; ay++)
+                        {
+                            if (blockFactory.CurrentBox().Equals("Block "))
+                            {
+                                if (!blocked[x, ay, z] && z != 0 )
+                                {
+                                    if (blocked[x, ay - 1, z - 1] && blocked[x, ay - 1, z])
+                                    {
+                                        Debug.Log("ifisY에서 Block 에서의 좌표" + x + "," + ay + "," + z);
+                                        Vector3 futurePos1 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                        Quaternion futureRot1 = activeBlock.transform.rotation;
+                                        if (!IsPositionBlocked(futurePos1, futureRot1))
+                                        {
+                                            SmoothMove(activeBlock.transform.position, futurePos1);
+                                            Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+
+                                        }
+                                        Vector3 futurePosf11 = activeBlock.transform.position;
+                                        Quaternion futureRotf11 = activeBlock.transform.rotation;
+                                        if (!IsSetPositionBlocked(futurePosf11, futureRotf11))
+                                        {
+                                            Debug.Log("원하는곳 블락성공");
+                                            Invoke("StopBox", 1f);
+                                            //StopBox();
+
+
+                                        }
+                                        else
+                                        {
+                                            Invoke("StopBox", 1f);
+                                        }
+                                        goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+
+                                    
+                                    
+
+                                }
+                            }
+                            else if (blockFactory.CurrentBox().Equals("Block2"))
+                            {
+                                if (!blocked[x, ay, z] && !blocked[x + 1, ay, z] && z != 0)
+                                {
+                                    if (blocked[x, ay - 1, z] && blocked[x + 1, ay - 1, z] && blocked[x, ay - 1, z - 1] && blocked[x + 1, ay - 1, z - 1])
+                                    {
+                                        Debug.Log("if에서 Block2에서의 좌표" + x + "," + y + "," + z);
+                                        Vector3 futurePos2 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                        Quaternion futureRot2 = activeBlock.transform.rotation;
+                                        if (!IsPositionBlocked(futurePos2, futureRot2))
+                                        {
+                                            SmoothMove(activeBlock.transform.position, futurePos2);
+                                            Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                        }
+                                        Vector3 futurePos22 = activeBlock.transform.position;
+                                        Quaternion futureRot22 = activeBlock.transform.rotation;
+                                        if (!IsSetPositionBlocked(futurePos22, futureRot22))
+                                        {
+                                            Debug.Log("원하는곳 블락성공");
+                                            Invoke("StopBox", 1f);
+                                            //StopBox();
+
+
+                                        }
+                                        else
+                                        {
+                                            Invoke("StopBox", 1f);
+                                        }
+                                        goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+
+                                }
+                            }
+                            else if (blockFactory.CurrentBox().Equals("Block3"))
+                            {
+                                if (!blocked[x, ay, z] && !blocked[x, ay + 1, z] && z != 0)
+                                {
+                                    if(blocked[x , ay - 1, z] && blocked[x, ay - 1, z - 1])
+                                    {
+                                        Debug.Log("if에서 Block3에서의 좌표" + x + "," + y + "," + z);
+                                        Vector3 futurePos3 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                        Quaternion futureRot3 = activeBlock.transform.rotation;
+                                        if (!IsPositionBlocked(futurePos3, futureRot3))
+                                        {
+                                            SmoothMove(activeBlock.transform.position, futurePos3);
+                                            Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                        }
+                                        Vector3 futurePos33 = activeBlock.transform.position;
+                                        Quaternion futureRot33 = activeBlock.transform.rotation;
+                                        if (!IsSetPositionBlocked(futurePos33, futureRot33))
+                                        {
+                                            Debug.Log("원하는곳 블락성공");
+                                            Invoke("StopBox", 1f);
+                                            //StopBox();
+
+
+                                        }
+                                        else
+                                        {
+                                            Invoke("StopBox", 1f);
+                                        }
+                                        goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+
+
+                                }
+                            }
+                            else if (blockFactory.CurrentBox().Equals("Block4"))
+                            {
+                                if (!blocked[x, ay, z] && !blocked[x, ay, z + 1]&& z != 0)
+                                {
+                                    if(blocked[x, ay - 1, z] && blocked[x, ay - 1, z + 1] && blocked[x , ay - 1, z - 1])
+                                    {
+                                        Debug.Log("if에서 Block4에서의 좌표" + x + "," + ay + "," + z);
+                                        Vector3 futurePos4 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                        Quaternion futureRot4 = activeBlock.transform.rotation;
+                                        if (!IsPositionBlocked(futurePos4, futureRot4))
+                                        {
+                                            SmoothMove(activeBlock.transform.position, futurePos4);
+                                            Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                        }
+                                        Vector3 futurePos44 = activeBlock.transform.position;
+                                        Quaternion futureRot44 = activeBlock.transform.rotation;
+                                        if (!IsSetPositionBlocked(futurePos44, futureRot44))
+                                        {
+                                            Debug.Log("원하는곳 블락성공");
+                                            Invoke("StopBox", 1f);
+                                            //StopBox();
+
+
+                                        }
+                                        else
+                                        {
+                                            Invoke("StopBox", 1f);
+                                        }
+                                        goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+                                    
+                                }
+                            }
+                            else if (blockFactory.CurrentBox().Equals("Block5"))
+                            {
+                                if (!blocked[x, ay, z] && !blocked[x + 1, ay, z] && !blocked[x, ay, z + 1] && !blocked[x + 1, ay, z + 1] && z != 0)
+                                {
+                                    if(blocked[x, ay - 1, z] && blocked[x + 1, ay - 1, z] && blocked[x, ay - 1, z + 1] && blocked[x + 1, ay - 1, z + 1] && blocked[x, ay - 1, z - 1] && blocked[x + 1, ay - 1, z - 1])
+                                    {
+                                        Debug.Log("if에서 Block5에서의 좌표" + x + "," + y + "," + z);
+                                        Vector3 futurePos5 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                        Quaternion futureRot5 = activeBlock.transform.rotation;
+                                        if (!IsPositionBlocked(futurePos5, futureRot5))
+                                        {
+                                            SmoothMove(activeBlock.transform.position, futurePos5);
+                                            Debug.Log("원하는 곳으로 이동 되었습니다.");
+                                        }
+                                        Vector3 futurePos55 = activeBlock.transform.position;
+                                        Quaternion futureRot55 = activeBlock.transform.rotation;
+                                        if (!IsSetPositionBlocked(futurePos55, futureRot55))
+                                        {
+                                            Debug.Log("원하는곳 블락성공");
+                                            Invoke("StopBox", 1f);
+                                            //StopBox();
+                                        }
+                                        else
+                                        {
+                                            Invoke("StopBox", 1f);
+                                        }
+                                        goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+                                    
+                                }
+
+                            }
+                            else if (blockFactory.CurrentBox().Equals("Block6"))
+                            {
+                                if (!blocked[x, ay, z] && !blocked[x + 1, ay, z] && !blocked[x, ay + 1, z] && !blocked[x + 1, ay + 1, z] && z != 0)
+                                {
+                                    if(blocked[x, ay - 1, z] && blocked[x + 1, ay - 1, z] && blocked[x, ay - 1, z - 1] && blocked[x + 1, ay - 1, z - 1])
+                                    {
+                                        Debug.Log("if에서 Block6에서의 좌표" + x + "," + ay + "," + z);
+                                        Vector3 futurePos6 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                        Quaternion futureRot6 = activeBlock.transform.rotation;
+                                        if (!IsPositionBlocked(futurePos6, futureRot6))
+                                        {
+                                            SmoothMove(activeBlock.transform.position, futurePos6);
+                                            Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                        }
+                                        Vector3 futurePos66 = activeBlock.transform.position;
+                                        Quaternion futureRot66 = activeBlock.transform.rotation;
+                                        if (!IsSetPositionBlocked(futurePos66, futureRot66))
+                                        {
+                                            Debug.Log("원하는곳 블락성공");
+                                            Invoke("StopBox", 1f);
+                                            //StopBox();
+
+
+                                        }
+                                        else
+                                        {
+                                            Invoke("StopBox", 1f);
+                                        }
+                                        goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+                                    
+                                }
+                            }
+                            else if (blockFactory.CurrentBox().Equals("Block7"))
+                            {
+                                if (!blocked[x, ay, z] && !blocked[x + 1, ay, z] && !blocked[x, ay + 1, z] && !blocked[x, ay, z + 1] && !blocked[x + 1, ay + 1, z] && !blocked[x + 1, ay, z + 1] && !blocked[x, ay + 1, z + 1] && !blocked[x + 1, ay + 1, z + 1] && z != 0)
+                                {
+                                    if(blocked[x, ay - 1, z] && blocked[x + 1, ay - 1, z] && blocked[x , ay - 1, z + 1] && blocked[x + 1, ay - 1, z + 1] && blocked[x, ay - 1, z - 1] && blocked[x + 1, ay - 1, z - 1])
+                                    {
+                                        Debug.Log("if에서 Block7에서의 좌표" + x + "," + ay + "," + z);
+                                    Vector3 futurePos7 = activeBlock.transform.position + new Vector3(x, ay, z);
+                                    Quaternion futureRot7 = activeBlock.transform.rotation;
+                                    if (!IsPositionBlocked(futurePos7, futureRot7))
+                                    {
+                                        SmoothMove(activeBlock.transform.position, futurePos7);
+                                        Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                    }
+                                    Vector3 futurePos77 = activeBlock.transform.position;
+                                    Quaternion futureRot77 = activeBlock.transform.rotation;
+                                    if (!IsSetPositionBlocked(futurePos77, futureRot77))
+                                    {
+                                        Debug.Log("원하는곳 블락성공");
+                                        Invoke("StopBox", 1f);
+                                        //StopBox();
+
+
+                                    }
+                                    else
+                                    {
+                                        Invoke("StopBox", 1f);
+                                    }
+                                    goto EXIT;
+                                    }
+                                    else
+                                    {
+                                        goto chck;
+                                    }
+                                    
+                                }
+                            }
+                            
+                            isYCheck = false;
+                        }
+                        isYCheck = false;
+                    }
+
+                    chck: isCr = true;
+
+                    if(isCr)
+                    {
+                        if (blockFactory.CurrentBox().Equals("Block "))
+                        {
+                            if (!blocked[x, y, z])
+                            {
+                                Debug.Log("ifCr에서 Block 에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos111 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot111 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos111, futureRot111))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos111);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+
+                                }
+                                Vector3 futurePos1111 = activeBlock.transform.position;
+                                Quaternion futureRot1111 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos1111, futureRot1111))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+
+                            }
+                        }
+                        else if (blockFactory.CurrentBox().Equals("Block2"))
+                        {
+                            if (!blocked[x, y, z] && !blocked[x + 1, y, z])
+                            {
+                                Debug.Log("if에서 Block2에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos222 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot222 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos222, futureRot222))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos222);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                }
+                                Vector3 futurePos2222 = activeBlock.transform.position;
+                                Quaternion futureRot2222 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos2222, futureRot2222))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+                            }
+                        }
+                        else if (blockFactory.CurrentBox().Equals("Block3"))
+                        {
+                            if (!blocked[x, y, z] && !blocked[x, y + 1, z])
+                            {
+                                Debug.Log("if에서 Block3에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos333 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot333 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos333, futureRot333))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos333);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                }
+                                Vector3 futurePos3333 = activeBlock.transform.position;
+                                Quaternion futureRot3333 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos3333, futureRot3333))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+
+
+                            }
+                        }
+                        else if (blockFactory.CurrentBox().Equals("Block4"))
+                        {
+                            if (!blocked[x, y, z] && !blocked[x, y, z + 1])
+                            {
+                                Debug.Log("if에서 Block4에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos444 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot444 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos444, futureRot444))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos444);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                }
+                                Vector3 futurePos4444 = activeBlock.transform.position;
+                                Quaternion futureRot4444 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos4444, futureRot4444))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+                            }
+                        }
+                        else if (blockFactory.CurrentBox().Equals("Block5"))
+                        {
+                            if (!blocked[x, y, z] && !blocked[x + 1, y, z] && !blocked[x, y, z + 1] && !blocked[x + 1, y, z + 1])
+                            {
+                                Debug.Log("if에서 Block5에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos555 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot555 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos555, futureRot555))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos555);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+                                }
+                                Vector3 futurePos5555 = activeBlock.transform.position;
+                                Quaternion futureRot5555 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos5555, futureRot5555))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+                            }
+
+                        }
+                        else if (blockFactory.CurrentBox().Equals("Block6"))
+                        {
+                            if (!blocked[x, y, z] && !blocked[x + 1, y, z] && !blocked[x, y + 1, z] && !blocked[x + 1, y + 1, z])
+                            {
+                                Debug.Log("if에서 Block6에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos666 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot666 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos666, futureRot666))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos666);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                }
+                                Vector3 futurePos6666 = activeBlock.transform.position;
+                                Quaternion futureRot6666 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos6666, futureRot6666))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+                            }
+                        }
+                        else if (blockFactory.CurrentBox().Equals("Block7"))
+                        {
+                            if (!blocked[x, y, z] && !blocked[x + 1, y, z] && !blocked[x, y + 1, z] && !blocked[x, y, z + 1] && !blocked[x + 1, y + 1, z] && !blocked[x + 1, y, z + 1] && !blocked[x, y + 1, z + 1] && !blocked[x + 1, y + 1, z + 1] &&
+                                !blocked[x, y, z - 1])
+                            {
+                                Debug.Log("if에서 Block7에서의 좌표" + x + "," + y + "," + z);
+                                Vector3 futurePos777 = activeBlock.transform.position + new Vector3(x, y, z);
+                                Quaternion futureRot777 = activeBlock.transform.rotation;
+                                if (!IsPositionBlocked(futurePos777, futureRot777))
+                                {
+                                    SmoothMove(activeBlock.transform.position, futurePos777);
+                                    Debug.Log("원하는 곳으로 이동 되었습니다.");
+
+                                }
+                                Vector3 futurePos7777 = activeBlock.transform.position;
+                                Quaternion futureRot7777 = activeBlock.transform.rotation;
+                                if (!IsSetPositionBlocked(futurePos7777, futureRot7777))
+                                {
+                                    Debug.Log("원하는곳 블락성공");
+                                    Invoke("StopBox", 1f);
+                                    //StopBox();
+
+
+                                }
+                                else
+                                {
+                                    Invoke("StopBox", 1f);
+                                }
+                                goto EXIT;
+                            }
+                        }
+
+
+                        isCr = false;
+                    }
+
+
+
+                
+                }    
+            }
+        }
+    EXIT:;
+        
+    }
+
+    
     
     private void UpKey()
     {
-        
-        Vector3 futurePos = activeBlock.transform.position + new Vector3(chX, chY, 0);
+        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 1, 0);
         Quaternion futureRot = activeBlock.transform.rotation;
         if (!IsPositionBlocked(futurePos, futureRot))
         {
             SmoothMove(activeBlock.transform.position, futurePos);
         }
     }
-    private void UpKey2L()
-    {
-
-        Vector3 futurePos = activeBlock.transform.position + new Vector3(chX, chY2L, 0);
-        Quaternion futureRot = activeBlock.transform.rotation;
-        if (!IsPositionBlocked(futurePos, futureRot))
-        {
-            SmoothMove(activeBlock.transform.position, futurePos);
-        }
-    }
-    private void UpKey3L()
-    {
-
-        Vector3 futurePos = activeBlock.transform.position + new Vector3(chX, chY3L, 0);
-        Quaternion futureRot = activeBlock.transform.rotation;
-        if (!IsPositionBlocked(futurePos, futureRot))
-        {
-            SmoothMove(activeBlock.transform.position, futurePos);
-        }
-    }
+    
     private void DownKey()
     {
         Vector3 futurePos = activeBlock.transform.position + new Vector3(0, -1, 0);
@@ -177,60 +646,24 @@ public class BlockMovement : MonoBehaviour {
         {
             SmoothMove(activeBlock.transform.position, futurePos);
             Debug.Log("if앞");
-        }else
+        }
+        else
         {
+            Debug.Log("else앞");
             Vector3 futurePosf = activeBlock.transform.position;
             Quaternion futureRotf = activeBlock.transform.rotation;
             if (!IsSetPositionBlocked(futurePosf, futureRotf))
             {
-
+                Debug.Log("else앞성공");
                 StopBox();
-                Debug.Log("else앞");
             }
             
         }
-        /*
-        Debug.Log("첫번째");
-        string boxcur = pullX.ToString() + "+";
-        ischchk = true;
-        if (ischchk)
-        {
-            Debug.Log("3번째");
-            for (int i = 0; i < li.Count; i++)
-            {
-                string[] str = li[i].Split(',');
-                Debug.Log(str[0] + "[0]번째");
-                Debug.Log(str[1] + "[1]번째");
-                if (str[1].Equals(boxcur))
-                {
-                    so = str[0];
-                    CheckReY();
-                }
-            }
-            ischchk = false;
-            Debug.Log("두번째");
-
-            if (activeBlock.transform.position.x < 3)
-            {
-                Vector3 futurePos1 = activeBlock.transform.position + new Vector3(1, 0, 0);
-                Quaternion futureRot1 = activeBlock.transform.rotation;
-                if (!IsPositionBlocked(futurePos1, futureRot1))
-                {
-                    SmoothMove(activeBlock.transform.position, futurePos1);
-                }
-            }
-            else
-            {
-                LeftKey();
-            }
-        }
-        */
+        
     }
     private void BackKey()
     {
-        chZ = -1 * chZ;
-        Debug.Log("ChZ = " + chZ);
-        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, chZ);
+        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, -1);
         Quaternion futureRot = activeBlock.transform.rotation;
         if (!IsPositionBlocked(futurePos, futureRot))
         {
@@ -248,8 +681,8 @@ public class BlockMovement : MonoBehaviour {
     }
     private void RightKey()
     {
-        Debug.Log("chX:" + chX);
-        Vector3 futurePos = activeBlock.transform.position + new Vector3(chX, 0, 0);
+        
+        Vector3 futurePos = activeBlock.transform.position + new Vector3(1, 0, 0);
         Quaternion futureRot = activeBlock.transform.rotation;
         if (!IsPositionBlocked(futurePos, futureRot))
         {
@@ -259,7 +692,9 @@ public class BlockMovement : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
+        
+    
+    rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
         
         if (!isMoving && !isRotating)
         {
@@ -306,70 +741,7 @@ public class BlockMovement : MonoBehaviour {
             }
 
 
-            /*
-			else if (Input.GetKeyDown(KeyCode.Q))
-			{
-				Vector3 futurePos = activeBlock.transform.position;
-				Quaternion futureRot = Quaternion.Euler(0, 0, 90) * activeBlock.transform.rotation;
-				if (!IsPositionBlocked(futurePos, futureRot)) {
-					SmoothRotate(activeBlock.transform.rotation, futureRot);
-				}
-			}
-            else if (Input.GetKeyDown(KeyCode.W))
-            {
-				Vector3 futurePos = activeBlock.transform.position;
-				Quaternion futureRot = Quaternion.Euler(90, 0, 0) * activeBlock.transform.rotation;
-				if (!IsPositionBlocked(futurePos, futureRot)) {
-					SmoothRotate(activeBlock.transform.rotation, futureRot);
-				}
-			}
-			else if (Input.GetKeyDown(KeyCode.E))
-			{
-				Vector3 futurePos = activeBlock.transform.position;
-				Quaternion futureRot = Quaternion.Euler(0, 0, -90) * activeBlock.transform.rotation;
-				if (!IsPositionBlocked(futurePos, futureRot)) {
-					SmoothRotate(activeBlock.transform.rotation, futureRot);
-				}
-			}
-            else if (Input.GetKeyDown(KeyCode.A))
-            {
-				Vector3 futurePos = activeBlock.transform.position;
-				Quaternion futureRot = Quaternion.Euler(0, 90, 0) * activeBlock.transform.rotation;
-				if (!IsPositionBlocked(futurePos, futureRot)) {
-					SmoothRotate(activeBlock.transform.rotation, futureRot);
-				}
-			}
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-				Vector3 futurePos = activeBlock.transform.position;
-				Quaternion futureRot = Quaternion.Euler(-90, 0, 0) * activeBlock.transform.rotation;
-				if (!IsPositionBlocked(futurePos, futureRot)) {
-					SmoothRotate(activeBlock.transform.rotation, futureRot);
-				}
-			}
-            else if (Input.GetKeyDown(KeyCode.D))
-            {
-				Vector3 futurePos = activeBlock.transform.position;
-				Quaternion futureRot = Quaternion.Euler(0, -90, 0) * activeBlock.transform.rotation;
-				if (!IsPositionBlocked(futurePos, futureRot)) {
-					SmoothRotate(activeBlock.transform.rotation, futureRot);
-				}
-			}
-            */
-
-
-            //fallSpeed = defaultFallSpeed;
-
-            /*
-			else if (Input.GetKey(KeyCode.Space)) 
-			{
-                Debug.Log("space");
-
-                
-                //fallSpeed = 20f;
-            }
-            */
-			//Debug.Log (fallSpeed);
+            
         }
         else
         {
@@ -383,98 +755,28 @@ public class BlockMovement : MonoBehaviour {
                 SmoothRotate();
             }
         }
-        if (isBeat)
+
+        if(isCreate)
         {
-            if (Time.time > nextTime)
-            {
-                nextTime = Time.time + timeLeft;
-                ForwardKey();
-            }
+            Invoke("CarryBox", 1f);
+            isCreate = false;
         }
-
-        
-    
-        
         
 
 
 
 
-        /*
-        if (chX >= 1)
-        {
-            if(blockFactory.CurrentBox().Equals("Block4") || blockFactory.CurrentBox().Equals("Block5") || blockFactory.CurrentBox().Equals("Block7"))
-            {
-                
-                if (activeBlock.transform.position.z >= (maxZ - 1))
-                {
-                    Vector3 futurePos = activeBlock.transform.position;
-                    Quaternion futureRot = activeBlock.transform.rotation;
-                    if (!IsSetPositionBlocked(futurePos, futureRot))
-                    {
-                        StopBox();
-                        Debug.Log("aaaa" + pullX + "," + chX);
-                    }
-                }
-                
-            }
-            else
-            {
-                if (activeBlock.transform.position.z >= maxZ)
-                {
-                    Vector3 futurePos = activeBlock.transform.position;
-                    Quaternion futureRot = activeBlock.transform.rotation;
-                    if (!IsSetPositionBlocked(futurePos, futureRot))
-                    {
-                        StopBox();
-                        Debug.Log("bbbb" + pullX + "," + chX);
-                    }
-                }
-            }
-            
-        }
-        if(chX == 0)
-        {
-            if(pullX >= 1)
-            {
-                if(isMinus)
-                {
-                    maxZ--;
-                    Debug.Log(maxZ + "maxZ 감소값");
-                    isMinus = false;
-                }
-            }
-
-
-            if (blockFactory.CurrentBox().Equals("Block4") || blockFactory.CurrentBox().Equals("Block5") || blockFactory.CurrentBox().Equals("Block7"))
-            {
-                if (activeBlock.transform.position.z >= (maxZ - 1))
-                {
-                    Vector3 futurePos = activeBlock.transform.position;
-                    Quaternion futureRot = activeBlock.transform.rotation;
-                    if (!IsSetPositionBlocked(futurePos, futureRot))
-                    {
-                        StopBox();
-                        Debug.Log("cccc" + pullX + "," + chX);
-                    }
-                }
-            }
-            else
-            {
-                if (activeBlock.transform.position.z >= maxZ)
-                {
-                    Vector3 futurePos = activeBlock.transform.position;
-                    Quaternion futureRot = activeBlock.transform.rotation;
-                    if (!IsSetPositionBlocked(futurePos, futureRot))
-                    {
-                        StopBox();
-                        Debug.Log("dddd" + pullX + "," + chX);
-                    }
-                }
-            }
-        }
-        */
         
+
+
+
+
+
+
+
+
+       
+
         if (Input.GetKeyDown(KeyCode.Space))
         { 
             Vector3 futurePos = activeBlock.transform.position;
@@ -483,301 +785,36 @@ public class BlockMovement : MonoBehaviour {
             {
                 StopBox();
             }
-                /*
-                isBeat = false;
-                Debug.Log("This-space-");
-                cnt++;
-                rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
-                rigidbody.constraints = RigidbodyConstraints.None;
-
-                Debug.Log("----------------------------------------------------------------------------");
-
-                Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
-                Quaternion futureRot = activeBlock.transform.rotation;
-                Debug.Log("###futurePos++" + futurePos + "###futureRot++" + futureRot);
-                if (IsPositionBlocked(futurePos, futureRot))
-                {
-                    Debug.Log("This-isFalling-");
-                    activeBlock.transform.position = new Vector3(
-                        (int)Mathf.Round(activeBlock.transform.position.x),
-                        (int)Mathf.Round(activeBlock.transform.position.y),
-                        (int)Mathf.Round(activeBlock.transform.position.z));
-                    Debug.Log("isFalling in -:" + (int)Mathf.Round(activeBlock.transform.position.x) +
-                        (int)Mathf.Round(activeBlock.transform.position.y) +
-                        (int)Mathf.Round(activeBlock.transform.position.z));
-                    SetPositionBlocked();
-
-                    activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, -2, 1), Quaternion.identity);
-                    zNextCheckPoint = 1;
-                }
-
-
-                rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
-                activeBlock.transform.position = new Vector3(
-                           (int)Mathf.Round(activeBlock.transform.position.x),
-                           (int)Mathf.Round(activeBlock.transform.position.y),
-                           (int)Mathf.Round(activeBlock.transform.position.z));
-
-                if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
-                {
-                    dicList = description;
-                }
-                Invoke("FreezeBlock", 2);
-
-                Invoke("SetPositionBlocked", 3);
-                */
-            }
-        
-    }
-
-
-    
-
-    private void CheckReY() 
-    {
-        if (isReCount)
-        {
-            if (so.Equals("Block3") || so.Equals("Block6") || so.Equals("Block7"))
-            {
-                UpKey();
-                UpKey();
-                Debug.Log("성공");
-            }
-            else
-            {
-                Debug.Log("성공2");
-                UpKey();
-            }
-            
-
-            isReCount = false;
-            
+                
         }
         
-        Debug.Log(isReCount + "isReCount");
     }
 
-    int line3L = 0;
-    int line2L = 0;
-    int line3LL = 0;
-    int line2LL = 0;
-    int line1L = 0;
-    int line1LL = 0;
     
+
+
     
     private void CreateBox()
     {
+
         //Debug.Log("CreateBox chX 값 = " + chX);
         activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, 0, 0), Quaternion.identity);
+        BlockCheck();
 
         
-
-
-
-        if (blockFactory.CurrentBox().Equals("Block7"))     
-        {
-            li3.Add("Block7");
-            chX = 3;
-            RightKey();
-            if (line3L == 1)
-            {
-                chY3L = 2;
-            }
-            
-            UpKey3L();
-            line3 += 2;
-            isli3 = true;
-        }
-
-        if (blockFactory.CurrentBox().Equals("Block6"))
-        {
-            li3.Add("Block6");
-            chX = 3;
-            RightKey();
-            if (line3L == 1)
-            {
-                chY3L = 2;
-            }
-            
-            UpKey3L();
-            line3++;
-            isli3 = true;
-        }
-
-        if(line3 >= 8)
-        {
-            line3L++;
-            line3 = 0;
-            //y축으로 2 이동
-        }
-
-        //isSetblock에서는 닿은것이 7일때는 2칸뒤로 이동 6일때는 1칸이동
-
-
         
+        isCreate = true;
 
-        if (blockFactory.CurrentBox().Equals("Block5"))
-        {
-            li2.Add("Block5");
-            chX = 1;
-            RightKey();
-            if (line2L == 1)
-            {
-                chY2L = 1;
-            }
-            else if (line2L == 2)
-            {
-                chY2L = 2;
-            }
-            else if (line2L == 3)
-            {
-                chY2L = 3;
-            }
-            else if (line2L == 4)
-            {
-                chY2L = 4;
-            }
-            else if (line2L == 5)
-            {
-                chY2L = 5;
-            }
-            UpKey2L();
-            line2 += 2;
-            isli2 = true;
-        }
-
-        if (blockFactory.CurrentBox().Equals("Block2"))
-        {
-            li2.Add("Block2");
-            chX = 1;
-            RightKey();
-            if (line2L == 1)
-            {
-                chY2L = 1;
-            }
-            else if (line2L == 2)
-            {
-                chY2L = 2;
-            }
-            else if (line2L == 3)
-            {
-                chY2L = 3;
-            }
-            else if (line2L == 4)
-            {
-                chY2L = 4;
-            }
-            else if (line2L == 5)
-            {
-                chY2L = 5;
-            }
-            UpKey2L();
-            line2++;
-            isli2 = true;
-        }
-
-        if (line2 >= 8)
-        {
-            line2L++;
-            
-            line2 = 0;
-            //y축으로 1 이동
-        }
-
-        //isSetblock에서는 닿은것이 5일때는 2칸뒤로 이동 2일때는 1칸이동
-
-
-        /*
-         * 123 => 12놓고 3을 위로 놓음
-         * 132 => 1놓고 3앞에놓고 뒤로 2넣음
-         * 213 => 21놓고 3을 위로 놓음
-         * 231 => 2놓고 3위로놓고 1놓음
-         * 312 => 
-         * 321 => 
-         */
-
-        if (blockFactory.CurrentBox().Equals("Block "))        
-        {
-            li1.Add("Block ");
-            line1++;
-            isli1 = true;
-        }
-
-        if (blockFactory.CurrentBox().Equals("Block3"))        
-        {
-            li1.Add("Block3");
-            line1++;
-            isli1 = true;
-        }
-
-        if (blockFactory.CurrentBox().Equals("Block4"))        
-        {
-            li1.Add("Block4");
-            line1++;
-            isli1 = true;
-        }
-
-        if(line1 >= 8)
-        {
-
-        }
-            
-        /*
-        if (blockFactory.CurrentBox().Equals("Block2") || blockFactory.CurrentBox().Equals("Block5") || blockFactory.CurrentBox().Equals("Block6") || blockFactory.CurrentBox().Equals("Block7"))
-        {
-            if (chX == 4)
-            {
-                Debug.Log(chX + "reset chX");
-                pullX++;
-                Debug.Log(pullX + "pullx");
-                isMinus = true;
-                chX = 0;
-            }
-        }
-        
-        if(chX > 0)
-        {
-            RightKey();
-        }
-        */
-        isBeat = true;
-        isChk = true;
     }
     
     private void StopBox()
     {
-        isReCount = true;
-        isBeat = false;
         Debug.Log("This-space-");
         cnt++;
         rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
         rigidbody.constraints = RigidbodyConstraints.None;
-        /*
-        Debug.Log("----------------------------------------------------------------------------");
-
-        Vector3 futurePos = activeBlock.transform.position + new Vector3(0, 0, 1);
-        Quaternion futureRot = activeBlock.transform.rotation;
-        Debug.Log("###futurePos++" + futurePos + "###futureRot++" + futureRot);
-        if (IsPositionBlocked(futurePos, futureRot))
-        {
-            Debug.Log("This-isFalling-");
-            activeBlock.transform.position = new Vector3(
-                (int)Mathf.Round(activeBlock.transform.position.x),
-                (int)Mathf.Round(activeBlock.transform.position.y),
-                (int)Mathf.Round(activeBlock.transform.position.z));
-            Debug.Log("isFalling in -:" + (int)Mathf.Round(activeBlock.transform.position.x) +
-                (int)Mathf.Round(activeBlock.transform.position.y) +
-                (int)Mathf.Round(activeBlock.transform.position.z));
-            SetPositionBlocked();
-
-            activeBlock = (GameObject)GameObject.Instantiate(blockFactory.GetNextBlock(), new Vector3(0, -2, 1), Quaternion.identity);
-            zNextCheckPoint = 1;
-        }
-        */
-        string more = blockFactory.CurrentBox() + "," + pullX + "+";
-        Debug.Log(more + "more");
-        li.Add(more);
-
+        
+        
         rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
         activeBlock.transform.position = new Vector3(
                        (int)Mathf.Round(activeBlock.transform.position.x),
@@ -788,36 +825,11 @@ public class BlockMovement : MonoBehaviour {
         {
              dicList = description;
         }
-        /*
-        if (blockFactory.CurrentBox().Equals("Block ") || blockFactory.CurrentBox().Equals("Block3") || blockFactory.CurrentBox().Equals("Block4"))
-        {
-            if(chX <= 5)
-            {
-                chX++;
-                Debug.Log(chX + "chX첫번째 값");
-            }
-            
-        }
-        else
-        {
-            if (chX <= 5)
-            {
-                chX += 2;
-                Debug.Log(chX + "chX두번째 값");
-                
-            }
-            
-        }
 
-        if (chX >= 5)
-        {
-            Debug.Log(chX + "reset chX");
-            pullX++;
-            Debug.Log(pullX + "pullx");
-            isMinus = true;
-            chX = 0;
-        }
-        */
+        
+
+
+
 
         FreezeBlock();
         SetPositionBlocked();
@@ -825,7 +837,6 @@ public class BlockMovement : MonoBehaviour {
         
         
         
-        isChk = false;
 
 
     }
@@ -846,23 +857,29 @@ public class BlockMovement : MonoBehaviour {
 			}
 		}
     }
+    
     void BlockCheck()
     {
-        Debug.Log("BlockCheck");
+        //vlist.Dispose();
         int count = 0;
-        currentBox = blockFactory.CurrentBox();
+        
+        
+        //currentBox = blockFactory.CurrentBox();
         if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
         {
             boxsize = description;
         }
+        //Debug.Log("size=" + boxsize);
         //x,y,z 좌표 순서
         bool Isy = false;
         bool Isz = false;
         string[] bsize = boxsize.Split(',');
+        //Debug.Log("bs0="+bsize[0]);
+        //Debug.Log("bs1=" + bsize[1]);
+        //Debug.Log("bs2=" + bsize[2]);
         int xsize = Int32.Parse(bsize[0]);
         int ysize = Int32.Parse(bsize[1]);
         int zsize = Int32.Parse(bsize[2]);
-        Debug.Log(xsize + "," + ysize + "," + zsize);
         vlist = new List<string>();
         if (xsize == 0 && ysize != 0)
         {
@@ -882,6 +899,7 @@ public class BlockMovement : MonoBehaviour {
                     if (blocked[i, j, k] == true)
                     {
                         //들어있음
+
                     }
                     else
                     {
@@ -901,9 +919,26 @@ public class BlockMovement : MonoBehaviour {
                                     }
                                     else
                                     {
-                                        count++;
-                                        //비어있음
-                                        
+                                        if (j != 0)
+                                        {
+                                            if (b == 1)
+                                            {
+                                                count++;
+                                            }
+                                            else
+                                            {
+                                                if (blocked[i + a, j + b - 1, k + c] == true)
+                                                {
+                                                    count++;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            count++;
+                                            //비어있음
+                                        }
+
                                     }
 
                                 }
@@ -913,17 +948,23 @@ public class BlockMovement : MonoBehaviour {
                         }
                         if (count != 0 && count == xsize * ysize * zsize)
                         {
-
-                            //들어갈 수 있다.
-                            string data = i + "," + j + "," + k;
-                            vlist.Add(data);
-                            //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
-                            
-                        }
-                        else if (count == 0)
-                        {
-                            Debug.Log("게임오버");
-                            isDead = true;
+                            if (j != 0)
+                            {
+                                if (blocked[i, j - 1, k] == true)
+                                {
+                                    //들어갈 수 있다.
+                                    string data = i + "," + j + "," + k;
+                                    vlist.Add(data);
+                                    //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
+                                }
+                            }
+                            else
+                            {
+                                //들어갈 수 있다.
+                                string data = i + "," + j + "," + k;
+                                vlist.Add(data);
+                                //Debug.Log(data + "= 최종적으로 들어갈 수 있다");
+                            }
                         }
                         else
                         {
@@ -935,16 +976,36 @@ public class BlockMovement : MonoBehaviour {
                 }
             }
         }
-        //Debug.Log("카운트1" + vlist.Count);
-        /*
-        minus = (250 - vlist.Count);
-        for (int a = 0; a < minus; a++)
-        {
-            vlist.Add("0,0,0");
-        }
-        */
-        //Debug.Log("카운트2" + vlist.Count);
         
+        
+        
+
+
+
+
+
+        
+
+
+
+
+        
+        int num = 250 - vlist.Count;
+        if (num == 250)
+        {
+            Debug.Log("게임오버");
+            isDead = true;
+        }
+        else
+        {
+            for (int a = 0; a < num; a++)
+            {
+                vlist.Add("0,0,0");
+            }
+            //Debug.Log("Vlist 크기 : " + vlist.Count);
+        }
+        
+
     }
 
     private bool IsPositionBlocked(Vector3 futurePos, Quaternion futureRot) {
@@ -956,6 +1017,18 @@ public class BlockMovement : MonoBehaviour {
                 //Debug.Log ("Future Pos: " + futurePos);
                 try
                 {
+                    if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0) || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)
+                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 4) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 4))
+                    {
+                        Debug.Log("3번째");
+                        return true;
+                    }
+                    if (((int)(Mathf.Round(activeBlock.transform.position.z))) > 8)
+                    {
+                        activeBlock.transform.position = new Vector3(activeBlock.transform.position.x, activeBlock.transform.position.y, 8);
+                    }
+
+                    /*
                     
                     if (blocked[
                             (int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)),
@@ -964,17 +1037,6 @@ public class BlockMovement : MonoBehaviour {
                     {
                         
                         return true;
-                    }
-                    
-                    /*
-                    if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0) || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)
-                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 4) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 4))
-                    {
-                        Debug.Log("3번째");
-                        
-                        return true;
-
-                        
                     }
                     */
                 }
@@ -992,8 +1054,7 @@ public class BlockMovement : MonoBehaviour {
 			return true;
 		return false;*/
 	}
-
-
+    
 
     private bool IsSetPositionBlocked(Vector3 futurePos, Quaternion futureRot)
     {
@@ -1011,124 +1072,9 @@ public class BlockMovement : MonoBehaviour {
                             (int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)),
                             (int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z))])
                     {
-                        Debug.Log("1번째" + pullX);
-
-                        if(isli1)
-                        {
-                            isBeat = false;
-                            if (li1.Count > 1)
-                            {
-                                if (li1[li1.Count - 2].Equals("Block "))
-                                {
-                                    Debug.Log("Block 임");
-                                    chZ = 1;
-                                    BackKey();
-                                }
-                                else if (li1[li1.Count - 2].Equals("Block3"))
-                                {
-                                    Debug.Log("Block3임");
-                                    chZ = 1;
-                                    BackKey();
-                                }
-                                else if (li1[li1.Count - 2].Equals("Block4"))
-                                {
-                                    Debug.Log("Block4임");
-                                    chZ = 1;
-                                    BackKey();
-                                }
-                            }
-                            isli1 = false;
-                        }
-                        else if (isli2)
-                        {
-                            isBeat = false;
-                            if (li2.Count > 1)
-                            {
-                                Debug.Log("Count = " + li2.Count);
-                                if (li2[li2.Count - 2].Equals("Block5"))
-                                {
-                                    //2
-                                    chZ = 2;
-                                    BackKey();
-                                    Debug.Log("2백");
-                                }
-                                else if (li2[li2.Count - 2].Equals("Block2"))
-                                {
-                                    //1
-                                    chZ = 1;
-                                    BackKey();
-                                    Debug.Log("1백");
-                                }
-                            }
-                            
-                            Debug.Log("끝");
-                            isli2 = false;
-                            Debug.Log("끝222");
-                            //return false;
-                        }
-                        else if (isli3)
-                        {
-                            isBeat = false;
-                            if (li3.Count > 1)
-                            {
-                                if (li3[li3.Count - 2].Equals("Block7"))
-                                {
-                                    //2
-                                    chZ = 2;
-                                    BackKey();
-                                }
-                                else if (li3[li3.Count - 2].Equals("Block6"))
-                                {
-                                    //1
-                                    chZ = 1;
-                                    BackKey();
-                                }
-                            }
-                            isli3 = false;
-                        }
-
-                        /*
-                        if(pullX > 0)
-                        {
-                            isBeat = false;
-                            int lipullX = pullX - 1;
-                            
-                            string boxcur = lipullX.ToString() + "+";
-                            Debug.Log(boxcur + "는 boxcur");
-                            ischchk = true;
-                            if (ischchk)
-                            {
-                                for (int i = 0; i < li.Count; i++)
-                                {
-                                    string[] str = li[i].Split(',');
-                                    Debug.Log(str[0] + "[0]번째");
-                                    Debug.Log(str[1] + "[1]번째");
-                                    if (str[1].Equals(boxcur))
-                                    {
-                                        so = str[0];
-                                        CheckReY();
-                                    }
-                                }
-                                ischchk = false;
-                                
-                                if (activeBlock.transform.position.x <= 2)
-                                {
-                                    Vector3 futurePos1 = activeBlock.transform.position + new Vector3(1, 0, 0);
-                                    Quaternion futureRot1 = activeBlock.transform.rotation;
-                                    if (!IsPositionBlocked(futurePos1, futureRot1))
-                                    {
-                                        SmoothMove(activeBlock.transform.position, futurePos1);
-                                    }
-                                }
-                                else
-                                {
-                                    LeftKey();
-                                }
-                                
-                            }
-                            
-                        }*/
-
+                        Debug.Log("1번째");
+                        
+                        
                         return true;
                         
                     }
@@ -1145,7 +1091,6 @@ public class BlockMovement : MonoBehaviour {
                         {
 
                             Debug.Log("2번째");
-                            ForwardKey();
                             return true;
                         }
                         
@@ -1183,7 +1128,7 @@ public class BlockMovement : MonoBehaviour {
                     int j = (int)Mathf.Round(cube.transform.position.y);
                     int k = (int)Mathf.Round(cube.transform.position.z);
                     blocked[i, j, k] = true;
-                    
+                    Debug.Log("SetPosition에서 블락됨");
                 }
             }
             catch
@@ -1198,6 +1143,7 @@ public class BlockMovement : MonoBehaviour {
                     blockFactory.CurrentBox() + "," + dicList;
         boxes.Add(dataSend);
         Debug.Log("이 박스의 정보는 " + dataSend);
+        vlist.Clear();
         
 
         CreateBox();
