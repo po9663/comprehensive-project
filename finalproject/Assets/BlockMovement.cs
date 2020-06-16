@@ -40,7 +40,7 @@ public class BlockMovement : MonoBehaviour {
     float tElapsed;
     public string currentBox = ""; // 현재박스의 이름
     public string dataSend = ""; //데이터 전송
-    bool[,,] blocked = new bool[7, 7, 12];
+    bool[,,] blocked = new bool[11, 11, 12];
 
     bool isCreate = false;
     // Use this for initialization
@@ -86,27 +86,16 @@ public class BlockMovement : MonoBehaviour {
     bool isCr = true;
     private void CarryBox()
     {
-        for (int y = 0; y <= 4; y++)
+        for (int y = 0; y <= 9; y++)
         {
-            for (int z = 9; z >= 0; z--)
+            for (int z = 10; z >= 0; z--)
             {
-                for (int x = 0; x <= 4; x++)
+                for (int x = 0; x <= 9; x++)
                 {
-                    if(cnt != 0)
-                    { 
-                        for(int a = 0; a < vlist.Count; a++)
-                        {
-                            string[] strs = vlist[a].Split(',');
-                            if(Int32.Parse(strs[1]) >= 1)
-                            {
-                                isYCheck = true;
-
-                            }
-                        }
-                    }
+                    
                     if(isYCheck)
                     {
-                        for(int ay = 1; ay <= 3; ay++)
+                        for(int ay = 1; ay <= 8; ay++)
                         {
                             if (blockFactory.CurrentBox().Equals("Block "))
                             {
@@ -609,7 +598,18 @@ public class BlockMovement : MonoBehaviour {
 
 
 
-                
+                    if (cnt != 0)
+                    {
+                        for (int a = 0; a < vlist.Count; a++)
+                        {
+                            string[] strs = vlist[a].Split(',');
+                            if (Int32.Parse(strs[1]) >= 1)
+                            {
+                                isYCheck = true;
+
+                            }
+                        }
+                    }
                 }    
             }
         }
@@ -842,13 +842,13 @@ public class BlockMovement : MonoBehaviour {
     }
     
     private void initGrid() {
-		for (int i = 0; i < 7; i++) {
-			for (int j = 0; j < 7; j++) {
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
 				for (int k = 0; k < 12; k++) {
                     
 					blocked[i,j,k] = false;
 
-                    if ((i >= 5) || (j >= 5) || (k >= 10))
+                    if ((i >= 9) || (j >= 9) || (k >= 10))
                     {
                         blocked[i, j, k] = true;
                     }
@@ -889,10 +889,10 @@ public class BlockMovement : MonoBehaviour {
         {
             Isz = true;
         }
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 9; i++)
         {
             //좌표수 만큼 반복 7x7x12
-            for (int j = 0; j < 5; j++)
+            for (int j = 0; j < 9; j++)
             {
                 for (int k = 0; k < 10; k++)
                 {
@@ -1018,12 +1018,12 @@ public class BlockMovement : MonoBehaviour {
                 try
                 {
                     if (((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0) || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) < 0) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) < 0) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) < 0)
-                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 4) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 4))
+                        || ((int)Mathf.Round(futurePos.x + (cube.position.x - activeBlock.transform.position.x)) > 8) || ((int)Mathf.Round(futurePos.z + (cube.position.z - activeBlock.transform.position.z)) > 9) || ((int)Mathf.Round(futurePos.y + (cube.position.y - activeBlock.transform.position.y)) > 8))
                     {
                         Debug.Log("3번째");
                         return true;
                     }
-                    if (((int)(Mathf.Round(activeBlock.transform.position.z))) > 8)
+                    if (((int)(Mathf.Round(cube.transform.position.z))) > 9.5)
                     {
                         activeBlock.transform.position = new Vector3(activeBlock.transform.position.x, activeBlock.transform.position.y, 8);
                     }
