@@ -3,10 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.SceneManagement;
+using System.ComponentModel;
+
+using System.Linq;
+using System.Text;
+
+using System.IO.Ports;
 
 public class BlockMovement : MonoBehaviour {
-    
-	public GameObject Block;
+    private SerialPort sp;
+    public string message;
+
+    public GameObject Block;
     public GameObject Block2;
     public GameObject Block3;
     public GameObject Block4;
@@ -43,15 +51,17 @@ public class BlockMovement : MonoBehaviour {
     bool[,,] blocked = new bool[11, 11, 12];
 
     bool isCreate = false;
+    int recieve = 0;
     // Use this for initialization
     public BlockMovement()
     {
 
     }
 	void Start () {
-        //sp.Open();
-        //sp.ReadTimeout = 1;
-
+        /*
+        sp = new SerialPort("COM6", 9600, Parity.None, 8, StopBits.One);
+        sp.Open();
+        */
 
         // BlockFactory 클래스 객체생성
         boxes = new List<string>();
@@ -617,6 +627,8 @@ public class BlockMovement : MonoBehaviour {
         
     }
 
+
+
     
     
     private void UpKey()
@@ -689,12 +701,40 @@ public class BlockMovement : MonoBehaviour {
             SmoothMove(activeBlock.transform.position, futurePos);
         }
     }
+
+    private void SendArduino()
+    {
+        if (sp.IsOpen)
+        {
+            for(int i = 0; i < boxes.Count; i++)
+            {
+                sp.Write(boxes[i]);
+            }
+        }
+        else
+        {
+            sp.Close();
+            Application.Quit();
+        }
+
+
+        if (recieve == 1)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
+
+    }
+
     // Update is called once per frame
     void Update()
     {
         
-    
-    rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
+
+        //rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
         
         if (!isMoving && !isRotating)
         {
@@ -811,27 +851,31 @@ public class BlockMovement : MonoBehaviour {
     {
         Debug.Log("This-space-");
         cnt++;
+        /*
         rigidbody = activeBlock.transform.GetComponent<Rigidbody>();
         rigidbody.constraints = RigidbodyConstraints.None;
         
         
         rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
+        */
         activeBlock.transform.position = new Vector3(
                        (int)Mathf.Round(activeBlock.transform.position.x),
                        (int)Mathf.Round(activeBlock.transform.position.y),
                        (int)Mathf.Round(activeBlock.transform.position.z));
 
-        if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
+        if (dictionary.ContainsKey(blockFactory.CurrentBox()))
         {
-             dicList = description;
+
+            dicList = dictionary[blockFactory.CurrentBox()];
+
         }
 
-        
 
 
 
 
-        FreezeBlock();
+
+        //FreezeBlock();
         SetPositionBlocked();
         
         
@@ -863,11 +907,12 @@ public class BlockMovement : MonoBehaviour {
         //vlist.Dispose();
         int count = 0;
         
-        
         //currentBox = blockFactory.CurrentBox();
-        if (dictionary.TryGetValue(blockFactory.CurrentBox(), out string description))
+        if (dictionary.ContainsKey(blockFactory.CurrentBox()))
         {
-            boxsize = description;
+            
+            boxsize = dictionary[blockFactory.CurrentBox()];
+            
         }
         //Debug.Log("size=" + boxsize);
         //x,y,z 좌표 순서
@@ -1137,17 +1182,18 @@ public class BlockMovement : MonoBehaviour {
             }
         }
 
-        dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
+        dataSend =  ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
                     ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.z)) + "," +
-                    blockFactory.CurrentBox() + "," + dicList;
+                    ((int)Mathf.Round(activeBlock.transform.position.z));
         boxes.Add(dataSend);
         Debug.Log("이 박스의 정보는 " + dataSend);
         vlist.Clear();
         
-
+        
         CreateBox();
+
     }
+
     private void FreezeBlock()
     {
         rigidbody.constraints = RigidbodyConstraints.FreezeAll;

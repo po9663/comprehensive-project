@@ -63,7 +63,7 @@ public class Main2BlockMovement : MonoBehaviour
     void Start()
     {
         boxes = new List<string>();
-        num = new int[7];
+        num = new int[8];
         dictionary = new Dictionary<string, string>()
         {
             {"Block ","1,1,1"},
@@ -84,7 +84,7 @@ public class Main2BlockMovement : MonoBehaviour
         gameObjects[4] = Block5;
         gameObjects[5] = Block6;
         gameObjects[6] = Block7;
-        gobjs = new GameObject[7];
+        gobjs = new GameObject[8];
         
         string[] lists = s.Split(',');
         for(int i = 0; i<lists.Length; i++)
@@ -95,7 +95,7 @@ public class Main2BlockMovement : MonoBehaviour
         {
             gobjs[i] = gameObjects[num[i]];
         }
-        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], MATRED, MATBLUE, MATGREEN);
+        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7], MATRED, MATBLUE, MATGREEN);
         initGrid();
         CreateBox(boxNum);
         
@@ -822,9 +822,9 @@ public class Main2BlockMovement : MonoBehaviour
                        (int)Mathf.Round(activeBlock.transform.position.y),
                        (int)Mathf.Round(activeBlock.transform.position.z));
 
-        if (dictionary.TryGetValue(main2BlockFactory.CurrentBox(), out string description))
+        if (dictionary.Keys.Equals(main2BlockFactory.CurrentBox()))
         {
-            dicList = description;
+            dicList = main2BlockFactory.CurrentBox();
         }
 
 
@@ -870,10 +870,10 @@ public class Main2BlockMovement : MonoBehaviour
 
 
         //currentBox = blockFactory.CurrentBox();
-        if (dictionary.TryGetValue(main2BlockFactory.CurrentBox(), out string description))
+        if (dictionary.Keys.Equals(main2BlockFactory.CurrentBox()))
         {
-            boxsize = description;
-            Debug.Log("박스사이즈" + boxsize);
+            boxsize = main2BlockFactory.CurrentBox();
+            Debug.Log(boxsize + "는 boxsize");
         }
         //Debug.Log("size=" + boxsize);
         //x,y,z 좌표 순서
@@ -1153,8 +1153,15 @@ public class Main2BlockMovement : MonoBehaviour
         Debug.Log("이 박스의 정보는 " + dataSend);
         vlist.Clear();
 
-        boxNum++;
-        CreateBox(boxNum);
+        if(boxNum == 7)
+        {
+
+        }
+        else
+        {
+            boxNum++;
+            CreateBox(boxNum);
+        }
     }
     private void FreezeBlock()
     {
