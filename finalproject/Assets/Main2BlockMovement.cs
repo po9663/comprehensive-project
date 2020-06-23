@@ -11,6 +11,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.ComponentModel;
+
+using System.Linq;
+using System.Text;
+
+using System.IO.Ports;
 public class Main2BlockMovement : MonoBehaviour
 {
     
@@ -59,9 +65,15 @@ public class Main2BlockMovement : MonoBehaviour
     public string currentBox = ""; // 현재박스의 이름
     public string dataSend = ""; //데이터 전송
     // Use this for initialization
-    
+    private SerialPort sp;
+    public string message;
+    int recieve = 0;
     void Start()
     {
+        
+        sp = new SerialPort("COM6", 9600, Parity.None, 8, StopBits.One);
+        sp.Open();
+        
         boxes = new List<string>();
         num = new int[8];
         dictionary = new Dictionary<string, string>()
@@ -113,6 +125,26 @@ public class Main2BlockMovement : MonoBehaviour
     }
     bool isYCheck = false;
     bool isCr = true;
+    private void SendArduino() // 좌표 아두이노로 전송
+    {
+        if (sp.IsOpen)
+        {
+            string rsStr = "";
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                rsStr += boxes[i] + "/";
+            }
+            sp.Write(rsStr);
+
+        }
+        else
+        {
+            sp.Close();
+            Application.Quit();
+        }
+        
+
+    }
     private void CarryBox()
     {
         for (int y = 0; y <= 9; y++)
@@ -822,11 +854,13 @@ public class Main2BlockMovement : MonoBehaviour
                        (int)Mathf.Round(activeBlock.transform.position.y),
                        (int)Mathf.Round(activeBlock.transform.position.z));
 
-        if (dictionary.Keys.Equals(main2BlockFactory.CurrentBox()))
+        
+        if (dictionary.ContainsKey(main2BlockFactory.CurrentBox()))
         {
-            dicList = main2BlockFactory.CurrentBox();
-        }
 
+            dicList = dictionary[main2BlockFactory.CurrentBox()];
+            
+        }
 
 
 
@@ -870,10 +904,11 @@ public class Main2BlockMovement : MonoBehaviour
 
 
         //currentBox = blockFactory.CurrentBox();
-        if (dictionary.Keys.Equals(main2BlockFactory.CurrentBox()))
+        if (dictionary.ContainsKey(main2BlockFactory.CurrentBox()))
         {
-            boxsize = main2BlockFactory.CurrentBox();
-            Debug.Log(boxsize + "는 boxsize");
+
+            boxsize = dictionary[main2BlockFactory.CurrentBox()];
+
         }
         //Debug.Log("size=" + boxsize);
         //x,y,z 좌표 순서
@@ -1145,17 +1180,26 @@ public class Main2BlockMovement : MonoBehaviour
             }
         }
 
-        dataSend = cnt + "," + ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
-                    ((int)Mathf.Round(activeBlock.transform.position.z)) + "," +
-                    main2BlockFactory.CurrentBox() + "," + dicList;
+        dataSend = ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
+                   ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
+                   ((int)Mathf.Round(activeBlock.transform.position.z)) ;
         boxes.Add(dataSend);
         Debug.Log("이 박스의 정보는 " + dataSend);
         vlist.Clear();
 
-        if(boxNum == 7)
+        if(boxNum == 7) // 8개의 상자를 다 쌓았을 때
         {
-
+            /*
+            Debug.Log("상자끝끝");
+            string rsStr = "";
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                rsStr += boxes[i] + "/";
+            }
+            Debug.Log(rsStr);
+            */
+            
+            SendArduino();
         }
         else
         {

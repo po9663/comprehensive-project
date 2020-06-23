@@ -704,29 +704,21 @@ public class BlockMovement : MonoBehaviour {
 
     private void SendArduino()
     {
+        string rsStr = "";
         if (sp.IsOpen)
         {
             for(int i = 0; i < boxes.Count; i++)
             {
-                sp.Write(boxes[i]);
+                rsStr += boxes + "/";
             }
+            sp.Write(rsStr);
         }
         else
         {
             sp.Close();
             Application.Quit();
         }
-
-
-        if (recieve == 1)
-        {
-            Time.timeScale = 0;
-        }
-        else
-        {
-            Time.timeScale = 1;
-        }
-
+        
     }
 
     // Update is called once per frame
@@ -1188,7 +1180,6 @@ public class BlockMovement : MonoBehaviour {
         boxes.Add(dataSend);
         Debug.Log("이 박스의 정보는 " + dataSend);
         vlist.Clear();
-        
         
         CreateBox();
 
