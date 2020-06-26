@@ -107,15 +107,16 @@ public class Main2BlockMovement : MonoBehaviour
         {
             gobjs[i] = gameObjects[num[i]];
         }
-        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7], MATRED, MATBLUE, MATGREEN);
+        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7]/*, MATRED, MATBLUE, MATGREEN*/);
         initGrid();
         CreateBox(boxNum);
-        
+        /*
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
         {
             Debug.Log("Start here");
             mr.material = MATBLUE;
         }
+        */
         //grid생성
         
         // get the active block
@@ -1182,7 +1183,7 @@ public class Main2BlockMovement : MonoBehaviour
 
         dataSend = ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
                    ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
-                   ((int)Mathf.Round(activeBlock.transform.position.z)) ;
+                   ((int)Mathf.Round(activeBlock.transform.position.z)) + "." + dicList ;
         boxes.Add(dataSend);
         Debug.Log("이 박스의 정보는 " + dataSend);
         vlist.Clear();
@@ -1191,6 +1192,8 @@ public class Main2BlockMovement : MonoBehaviour
         {
             /*
             Debug.Log("상자끝끝");
+            
+            
             string rsStr = "";
             for (int i = 0; i < boxes.Count; i++)
             {

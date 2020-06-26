@@ -14,7 +14,7 @@ public class BlockFactory {
     {
 
     }
-	public BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, Material k, Material l, Material m) {
+	public BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g /*,Material k, Material l, Material m*/) {
 		blockTypes = new GameObject[7];
 		blockTypes[0] = a;
 		blockTypes[1] = b;
@@ -24,11 +24,12 @@ public class BlockFactory {
         blockTypes[5] = f;
         blockTypes[6] = g;
 
+        /*
         materialTypes = new Material[4];
 		materialTypes[0] = k;
 		materialTypes[1] = l;
 		materialTypes[3] = m;
-        
+        */
 
 	}
     //14 56
@@ -36,12 +37,14 @@ public class BlockFactory {
 		int num = ((int)Mathf.Round (Random.value * 10000)) % 7;
         //num = 0;
 		GameObject block = blockTypes[num];
-		num = ((int)Mathf.Round (Random.value * 10000)) % 3;
+        /*
+        num = ((int)Mathf.Round (Random.value * 10000)) % 3;
 		foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
 		{
 			Debug.Log("BlockFactory here");
 			mr.material = materialTypes[num];
 		}
+        */
         box = block.ToString().Substring(0,6);
         Debug.Log("팩토리에서의" + box);
 		return block;

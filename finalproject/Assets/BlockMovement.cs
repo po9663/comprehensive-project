@@ -75,20 +75,20 @@ public class BlockMovement : MonoBehaviour {
             {"Block6","2,2,1"},
             {"Block7","2,2,2"}
         };
-		blockFactory = new BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7, MATRED, MATBLUE, MATGREEN);
+		blockFactory = new BlockFactory(Block, Block2, Block3, Block4, Block5, Block6, Block7/*, MATRED, MATBLUE, MATGREEN*/);
         //grid생성
         initGrid();
         // get the active block
         //activeBlock = GameObject.FindGameObjectWithTag("Player");
         //상자 생성 위치는 0,0,1위치
         CreateBox();
-        
+        /*
         foreach (MeshRenderer mr in activeBlock.GetComponentsInChildren<MeshRenderer>())
 		{
 			Debug.Log("Start here");
 			mr.material = MATBLUE;
 		}
-        
+        */
         
     }
 

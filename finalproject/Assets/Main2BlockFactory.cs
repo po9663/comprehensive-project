@@ -12,7 +12,7 @@ public class Main2BlockFactory
     Material[] materialTypes;
     public string box = "";
     
-    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h, Material k, Material l, Material m)
+    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h/*, Material k, Material l, Material m*/)
     {
         blockTypes = new GameObject[8];
         blockTypes[0] = a;
@@ -23,12 +23,12 @@ public class Main2BlockFactory
         blockTypes[5] = f;
         blockTypes[6] = g;
         blockTypes[7] = h;
-
+        /*
         materialTypes = new Material[4];
         materialTypes[0] = k;
         materialTypes[1] = l;
         materialTypes[3] = m;
-        
+        */
     }
 
     
@@ -37,12 +37,14 @@ public class Main2BlockFactory
     {
         int mNum = 0;
         GameObject block = blockTypes[num];
+        /*
         mNum = ((int)Mathf.Round(Random.value * 10000)) % 3;
         foreach (MeshRenderer mr in block.GetComponentsInChildren<MeshRenderer>())
         {
             Debug.Log("BlockFactory here");
             mr.material = materialTypes[mNum];
         }
+        */
         box = block.ToString().Substring(0, 6);
         Debug.Log("팩토리에서의" + box);
 
