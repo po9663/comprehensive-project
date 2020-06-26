@@ -12,17 +12,19 @@ public class Main2BlockFactory
     Material[] materialTypes;
     public string box = "";
     
-    public Main2BlockFactory(GameObject a, GameObject b, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h/*, Material k, Material l, Material m*/)
+    public Main2BlockFactory(GameObject a, GameObject b/*, GameObject c, GameObject d, GameObject e, GameObject f, GameObject g, GameObject h*//*, Material k, Material l, Material m*/)
     {
         blockTypes = new GameObject[8];
         blockTypes[0] = a;
         blockTypes[1] = b;
+        /*
         blockTypes[2] = c;
         blockTypes[3] = d;
         blockTypes[4] = e;
         blockTypes[5] = f;
         blockTypes[6] = g;
         blockTypes[7] = h;
+        */
         /*
         materialTypes = new Material[4];
         materialTypes[0] = k;

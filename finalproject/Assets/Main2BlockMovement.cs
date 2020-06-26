@@ -70,10 +70,10 @@ public class Main2BlockMovement : MonoBehaviour
     int recieve = 0;
     void Start()
     {
-        
+        /*
         sp = new SerialPort("COM6", 9600, Parity.None, 8, StopBits.One);
         sp.Open();
-        
+        */
         boxes = new List<string>();
         num = new int[8];
         dictionary = new Dictionary<string, string>()
@@ -107,7 +107,7 @@ public class Main2BlockMovement : MonoBehaviour
         {
             gobjs[i] = gameObjects[num[i]];
         }
-        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1], gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7]/*, MATRED, MATBLUE, MATGREEN*/);
+        main2BlockFactory = new Main2BlockFactory(gobjs[0], gobjs[1]/*, gobjs[2], gobjs[3], gobjs[4], gobjs[5], gobjs[6], gobjs[7]*//*, MATRED, MATBLUE, MATGREEN*/);
         initGrid();
         CreateBox(boxNum);
         /*
@@ -152,7 +152,7 @@ public class Main2BlockMovement : MonoBehaviour
         {
             for (int z = 10; z >= 0; z--)
             {
-                for (int x = 0; x <= 9; x++)
+                for (int x = 4; x <= 4; x++)
                 {
                     if (cnt != 0)
                     {
@@ -1183,18 +1183,17 @@ public class Main2BlockMovement : MonoBehaviour
 
         dataSend = ((int)Mathf.Round(activeBlock.transform.position.x)) + "," +
                    ((int)Mathf.Round(activeBlock.transform.position.y)) + "," +
-                   ((int)Mathf.Round(activeBlock.transform.position.z)) + "." + dicList ;
+                   ((int)Mathf.Round(activeBlock.transform.position.z)) + "," + dicList ;
         boxes.Add(dataSend);
         Debug.Log("이 박스의 정보는 " + dataSend);
         vlist.Clear();
 
-        if(boxNum == 7) // 8개의 상자를 다 쌓았을 때
+        if(boxNum == 1) // 8개의 상자를 다 쌓았을 때
         {
-            /*
             Debug.Log("상자끝끝");
             
-            
-            string rsStr = "";
+            /*
+            string rsStr = cnt + "/";
             for (int i = 0; i < boxes.Count; i++)
             {
                 rsStr += boxes[i] + "/";
@@ -1202,7 +1201,7 @@ public class Main2BlockMovement : MonoBehaviour
             Debug.Log(rsStr);
             */
             
-            SendArduino();
+            //SendArduino();
         }
         else
         {
